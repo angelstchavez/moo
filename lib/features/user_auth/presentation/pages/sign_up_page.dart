@@ -1,9 +1,33 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:moo/features/user_auth/firebase_auth_implementation/firebase_auth_services.dart';
 import 'package:moo/features/user_auth/presentation/pages/login_page.dart';
 import 'package:moo/features/user_auth/presentation/widgets/form_container_widget.dart';
+import 'package:moo/global/common/toast.dart';
 
-class SignUpPage extends StatelessWidget {
+class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
+
+  @override
+  State<SignUpPage> createState() => _SignUpPageState();
+}
+
+class _SignUpPageState extends State<SignUpPage> {
+  final FirebaseAuthServices _auth = FirebaseAuthServices();
+
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  bool isSigningUp = false;
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,45 +83,44 @@ class SignUpPage extends StatelessWidget {
               const SizedBox(
                 height: 20,
               ),
-              const FormContainerWidget(
+              FormContainerWidget(
                 hintText: "Nombre",
+                controller: _nameController,
               ),
               const SizedBox(
                 height: 10,
               ),
-              const FormContainerWidget(
+              FormContainerWidget(
                 hintText: "Correo electrónico",
+                controller: _emailController,
               ),
               const SizedBox(
                 height: 10,
               ),
-              const FormContainerWidget(
+              FormContainerWidget(
                 hintText: "Contraseña",
                 isPasswordField: true,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              const FormContainerWidget(
-                hintText: "Confirmar contraseña",
-                isPasswordField: true,
+                controller: _passwordController,
               ),
               const SizedBox(
                 height: 20,
               ),
-              Container(
-                width: double.infinity,
-                height: 50,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.green.shade800,
-                ),
-                child: const Center(
-                  child: Text("Regístrate",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold)),
+              GestureDetector(
+                onTap: _signUp,
+                child: Container(
+                  width: double.infinity,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.green.shade800,
+                  ),
+                  child: const Center(
+                    child: Text("Regístrate",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold)),
+                  ),
                 ),
               ),
               const SizedBox(
@@ -114,10 +137,11 @@ class SignUpPage extends StatelessWidget {
                   Center(
                     child: GestureDetector(
                       onTap: () {
-                        Navigator.push(
+                        Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const LoginPage()));
+                                builder: (context) => const LoginPage()),
+                            (route) => false);
                       },
                       child: Text(
                         "Iniciar sesión",
@@ -135,5 +159,27 @@ class SignUpPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _signUp() async {
+    setState(() {
+      isSigningUp = true;
+    });
+
+    String name = _nameController.text;
+    String email = _emailController.text;
+    String password = _passwordController.text;
+
+    User? user = await _auth.signUpWithEmailAndPassword(email, password);
+
+    setState(() {
+      isSigningUp = false;
+    });
+    if (user != null) {
+      showToast(message: "Usuario creado exitosamente");
+      Navigator.pushNamed(context, "/home");
+    } else {
+      showToast(message: "Ha ocurrido un error");
+    }
   }
 }
