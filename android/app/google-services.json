@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "173997870344",
+    "project_id": "moo-app-6485e",
+    "storage_bucket": "moo-app-6485e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:173997870344:android:6bc0657e5b86e5437530bd",
+        "android_client_info": {
+          "package_name": "com.example.moo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCay6nq74b0ku0-p1MkjhiYlGJhIjWuIkA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
