@@ -58,7 +58,7 @@ class _HomePageState extends State<HomePage> {
                       );
                     }
                     if (snapshot.data!.isEmpty) {
-                      return const Center(child: Text("No Data Yet"));
+                      return const Center(child: Text("Aún no hay datos"));
                     }
                     final users = snapshot.data;
                     return Padding(
@@ -76,8 +76,8 @@ class _HomePageState extends State<HomePage> {
                             onTap: () {
                               _updateData(UserModel(
                                 id: user.id,
-                                username: "John Wick",
-                                adress: "Pakistan",
+                                username: "Angel Chavez",
+                                adress: "Colombia",
                               ));
                             },
                             child: const Icon(Icons.update),
@@ -92,7 +92,7 @@ class _HomePageState extends State<HomePage> {
                 onTap: () {
                   FirebaseAuth.instance.signOut();
                   Navigator.pushNamed(context, "/login");
-                  showToast(message: "Successfully signed out");
+                  showToast(message: "Sesión cerrada exitosamente");
                 },
                 child: Container(
                   height: 45,
