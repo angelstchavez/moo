@@ -14,14 +14,6 @@ class _PorfilePageState extends State<PorfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        iconTheme: const IconThemeData(color: Colors.white),
-        backgroundColor: Colors.green.shade800,
-        title: const Text(
-          "Perfil",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-      ),
       body: ListView(
         children: [
           Column(

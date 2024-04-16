@@ -35,21 +35,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        iconTheme: const IconThemeData(color: Colors.white),
-        backgroundColor: Colors.green.shade800,
-        title: const Text(
-          "Moo",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-        actions: [
-          IconButton(
-            onPressed: _logout,
-            icon: const Icon(Icons.logout),
-            color: Colors.white,
-          )
-        ],
-      ),
       drawer: DrawerWidget(
         onProfileTap: _profile,
         onSignUp: _logout,
