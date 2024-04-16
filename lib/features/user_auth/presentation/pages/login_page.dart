@@ -40,7 +40,7 @@ class _LoginPageState extends State<LoginPage> {
         automaticallyImplyLeading: false,
         backgroundColor: Colors.green.shade800,
         title: const Text(
-          "Moo",
+          "Moo App",
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
       ),

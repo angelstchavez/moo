@@ -2,7 +2,6 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:moo/features/user_auth/presentation/pages/animal_page.dart';
 import 'package:moo/features/user_auth/presentation/pages/farm_page.dart';
 import 'package:moo/features/user_auth/presentation/pages/home_page.dart';
@@ -55,7 +54,7 @@ class _NavBarState extends State<NavBar> {
       appBar: AppBar(
           backgroundColor: Colors.green.shade800,
           title: const Text(
-            "Moo",
+            "Moo App",
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
           actions: [
@@ -69,15 +68,28 @@ class _NavBarState extends State<NavBar> {
         child: body.elementAt(currentIndex),
       ),
       bottomNavigationBar: NavigationBar(
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
+        indicatorColor: Colors.grey.shade300,
+        destinations: [
           NavigationDestination(
-              icon: Icon(FontAwesomeIcons.bath), label: 'Fincas'),
+              icon: Icon(
+                Icons.home,
+                color: Colors.grey.shade600,
+              ),
+              label: 'Inicio'),
           NavigationDestination(
-              icon: Icon(Icons.add_task_sharp), label: 'Animales'),
+              icon: Icon(Icons.agriculture, color: Colors.grey.shade600),
+              label: 'Finca'),
           NavigationDestination(
-              icon: Icon(Icons.add_task_sharp), label: 'Producción'),
-          NavigationDestination(icon: Icon(Icons.person_2), label: 'Perfil'),
+              icon: Icon(Icons.assignment_rounded, color: Colors.grey.shade600),
+              label: 'Animales'),
+          NavigationDestination(
+              icon:
+                  Icon(Icons.view_agenda_rounded, color: Colors.grey.shade600),
+              label: 'Producción'),
+          NavigationDestination(
+            icon: Icon(Icons.person_2, color: Colors.grey.shade600),
+            label: 'Perfil',
+          ),
         ],
         selectedIndex: currentIndex,
         onDestinationSelected: (int index) {

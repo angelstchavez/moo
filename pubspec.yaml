@@ -38,6 +38,7 @@ dependencies:
   font_awesome_flutter: ^10.7.0
   google_sign_in: ^6.2.1
   flutter_facebook_auth: ^6.2.0
+  intl: ^0.17.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -70,6 +71,10 @@ flutter:
     - assets/icon.png
     - assets/icon/google.png
     - assets/icon/facebook.png
+    - assets/icon/granja.png
+    - assets/icon/valla.png
+    - assets/icon/vaca.png
+    - assets/icon/carne.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -28,7 +28,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Moo',
+      title: 'Moo App',
+      theme: ThemeData(primarySwatch: Colors.green),
       routes: {
         '/': (context) => const SplashScreen(
               child: LoginPage(),
