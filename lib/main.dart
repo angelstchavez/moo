@@ -5,6 +5,7 @@ import 'package:moo/features/app/splash_screen/splash_screen.dart';
 import 'package:moo/features/user_auth/presentation/pages/home_page.dart';
 import 'package:moo/features/user_auth/presentation/pages/login_page.dart';
 import 'package:moo/features/user_auth/presentation/pages/sign_up_page.dart';
+import 'package:moo/features/user_auth/presentation/widgets/navigation_bar.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,7 +36,7 @@ class MyApp extends StatelessWidget {
             ),
         '/login': (context) => const LoginPage(),
         '/signUp': (context) => const SignUpPage(),
-        '/home': (context) => const HomePage(),
+        '/home': (context) => const NavBar(),
       },
     );
   }
