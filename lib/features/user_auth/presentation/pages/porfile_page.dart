@@ -33,8 +33,8 @@ class _PorfilePageState extends State<PorfilePage> {
               Text(
                 currentUser.email!,
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: Colors.green.shade800, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                    color: Colors.grey, fontWeight: FontWeight.bold),
               ),
               const SizedBox(
                 height: 50,

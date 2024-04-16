@@ -2,10 +2,12 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:moo/features/user_auth/presentation/pages/animal_page.dart';
 import 'package:moo/features/user_auth/presentation/pages/farm_page.dart';
 import 'package:moo/features/user_auth/presentation/pages/home_page.dart';
 import 'package:moo/features/user_auth/presentation/pages/porfile_page.dart';
+import 'package:moo/features/user_auth/presentation/pages/production_page.dart';
 import 'package:moo/features/user_auth/presentation/widgets/drawer_widget.dart';
 import 'package:moo/global/common/toast.dart';
 
@@ -22,6 +24,7 @@ class _NavBarState extends State<NavBar> {
     HomePage(),
     FarmPage(),
     AnimalPage(),
+    ProductionPage(),
     PorfilePage(),
   ];
   void _logout() async {
@@ -34,10 +37,21 @@ class _NavBarState extends State<NavBar> {
     }
   }
 
+  void _profile() {
+    Navigator.pop(context);
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const PorfilePage()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: const DrawerWidget(),
+      drawer: DrawerWidget(
+        onProfileTap: _profile,
+        onSignUp: _logout,
+      ),
       appBar: AppBar(
           backgroundColor: Colors.green.shade800,
           title: const Text(
@@ -58,9 +72,11 @@ class _NavBarState extends State<NavBar> {
         destinations: const [
           NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
           NavigationDestination(
-              icon: Icon(Icons.local_florist), label: 'Fincas'),
+              icon: Icon(FontAwesomeIcons.bath), label: 'Fincas'),
           NavigationDestination(
               icon: Icon(Icons.add_task_sharp), label: 'Animales'),
+          NavigationDestination(
+              icon: Icon(Icons.add_task_sharp), label: 'Producción'),
           NavigationDestination(icon: Icon(Icons.person_2), label: 'Perfil'),
         ],
         selectedIndex: currentIndex,
