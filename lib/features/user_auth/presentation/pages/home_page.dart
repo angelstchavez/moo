@@ -1,6 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:moo/features/user_auth/presentation/widgets/drawer_widget.dart';
 
 import '../../../../global/common/toast.dart';
 
@@ -12,179 +14,39 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  void _logout() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      Navigator.pushNamed(context, "/login");
+      showToast(message: "Sesión cerrada exitosamente");
+    } catch (e) {
+      showToast(message: "Error al cerrar sesión: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          title: const Text("HomePage"),
-        ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              GestureDetector(
-                onTap: () {
-                  _createData(UserModel(
-                    username: "Henry",
-                    age: 21,
-                    adress: "London",
-                  ));
-                },
-                child: Container(
-                  height: 45,
-                  width: 100,
-                  decoration: BoxDecoration(
-                      color: Colors.blue,
-                      borderRadius: BorderRadius.circular(10)),
-                  child: const Center(
-                    child: Text(
-                      "Create Data",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-              StreamBuilder<List<UserModel>>(
-                  stream: _readData(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                    if (snapshot.data!.isEmpty) {
-                      return const Center(child: Text("Aún no hay datos"));
-                    }
-                    final users = snapshot.data;
-                    return Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Column(
-                          children: users!.map((user) {
-                        return ListTile(
-                          leading: GestureDetector(
-                            onTap: () {
-                              _deleteData(user.id!);
-                            },
-                            child: const Icon(Icons.delete),
-                          ),
-                          trailing: GestureDetector(
-                            onTap: () {
-                              _updateData(UserModel(
-                                id: user.id,
-                                username: "Angel Chavez",
-                                adress: "Colombia",
-                              ));
-                            },
-                            child: const Icon(Icons.update),
-                          ),
-                          title: Text(user.username!),
-                          subtitle: Text(user.adress!),
-                        );
-                      }).toList()),
-                    );
-                  }),
-              GestureDetector(
-                onTap: () {
-                  FirebaseAuth.instance.signOut();
-                  Navigator.pushNamed(context, "/login");
-                  showToast(message: "Sesión cerrada exitosamente");
-                },
-                child: Container(
-                  height: 45,
-                  width: 100,
-                  decoration: BoxDecoration(
-                      color: Colors.blue,
-                      borderRadius: BorderRadius.circular(10)),
-                  child: const Center(
-                    child: Text(
-                      "Sign out",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18),
-                    ),
-                  ),
-                ),
-              )
-            ],
+      appBar: AppBar(
+          backgroundColor: Colors.green.shade800,
+          title: const Text(
+            "Moo",
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
-        ));
-  }
-
-  Stream<List<UserModel>> _readData() {
-    final userCollection = FirebaseFirestore.instance.collection("users");
-
-    return userCollection.snapshots().map((qureySnapshot) => qureySnapshot.docs
-        .map(
-          (e) => UserModel.fromSnapshot(e),
-        )
-        .toList());
-  }
-
-  void _createData(UserModel userModel) {
-    final userCollection = FirebaseFirestore.instance.collection("users");
-
-    String id = userCollection.doc().id;
-
-    final newUser = UserModel(
-      username: userModel.username,
-      age: userModel.age,
-      adress: userModel.adress,
-      id: id,
-    ).toJson();
-
-    userCollection.doc(id).set(newUser);
-  }
-
-  void _updateData(UserModel userModel) {
-    final userCollection = FirebaseFirestore.instance.collection("users");
-
-    final newData = UserModel(
-      username: userModel.username,
-      id: userModel.id,
-      adress: userModel.adress,
-      age: userModel.age,
-    ).toJson();
-
-    userCollection.doc(userModel.id).update(newData);
-  }
-
-  void _deleteData(String id) {
-    final userCollection = FirebaseFirestore.instance.collection("users");
-
-    userCollection.doc(id).delete();
-  }
-}
-
-class UserModel {
-  final String? username;
-  final String? adress;
-  final int? age;
-  final String? id;
-
-  UserModel({this.id, this.username, this.adress, this.age});
-
-  static UserModel fromSnapshot(
-      DocumentSnapshot<Map<String, dynamic>> snapshot) {
-    return UserModel(
-      username: snapshot['username'],
-      adress: snapshot['adress'],
-      age: snapshot['age'],
-      id: snapshot['id'],
+          actions: [
+            IconButton(
+                onPressed: _logout,
+                icon: const Icon(Icons.logout),
+                color: Colors.white)
+          ],
+          iconTheme: const IconThemeData(color: Colors.white)),
+      drawer: const DrawerWidget(),
+      body: const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [Text("Bandeja principal")],
+        ),
+      ),
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      "username": username,
-      "age": age,
-      "id": id,
-      "adress": adress,
-    };
   }
 }
