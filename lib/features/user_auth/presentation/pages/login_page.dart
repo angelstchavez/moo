@@ -211,10 +211,9 @@ class _LoginPageState extends State<LoginPage> {
                           (route) => false,
                         );
                       },
-                      child: Text(
+                      child: const Text(
                         "Regístrate",
                         style: TextStyle(
-                          color: Colors.green.shade800,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
