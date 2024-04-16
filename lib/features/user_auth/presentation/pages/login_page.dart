@@ -2,6 +2,7 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:moo/features/user_auth/firebase_auth_implementation/firebase_auth_services.dart';
 import 'package:moo/features/user_auth/presentation/pages/reset_password_page.dart';
@@ -283,5 +284,28 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  void _signInWithFacebook() async {}
+  void _signInWithFacebook() async {
+    try {
+      // Inicia sesión con Facebook
+      final LoginResult result = await FacebookAuth.instance.login();
+
+      // Verifica si la autenticación fue exitosa
+      if (result.status == LoginStatus.success) {
+        // Navega a la página de inicio después de iniciar sesión exitosamente
+        Navigator.pushNamed(context, "/home");
+      } else if (result.status == LoginStatus.cancelled) {
+        // El usuario canceló el inicio de sesión con Facebook
+        showToast(message: "Inicio de sesión con Facebook cancelado");
+      } else {
+        // Ocurrió un error durante el inicio de sesión con Facebook
+        showToast(
+            message:
+                "Ha ocurrido un error durante el inicio de sesión con Facebook");
+      }
+    } catch (e) {
+      // Captura cualquier error
+      showToast(message: "Ha ocurrido un error $e");
+      print("$e");
+    }
+  }
 }
