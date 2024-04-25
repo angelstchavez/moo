@@ -1,12 +1,16 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
+
 import 'package:moo/features/app/splash_screen/splash_screen.dart';
+import 'package:moo/features/user_auth/presentation/pages/batches/batch_page.dart';
 import 'package:moo/features/user_auth/presentation/pages/login_page.dart';
 import 'package:moo/features/user_auth/presentation/pages/sign_up_page.dart';
 import 'package:moo/features/user_auth/presentation/widgets/navigation_bar.dart';
+//importaciones firebase
 
-Future main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (kIsWeb) {
     await Firebase.initializeApp(
@@ -26,18 +30,20 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Moo App',
       theme: ThemeData(primarySwatch: Colors.green),
       routes: {
         '/': (context) => const SplashScreen(
-              child: LoginPage(),
+              child: NavBar(),
             ),
         '/login': (context) => const LoginPage(),
         '/signUp': (context) => const SignUpPage(),
         '/home': (context) => const NavBar(),
+        '/batch': (context) => const BatchPage(),
       },
+      
     );
   }
 }

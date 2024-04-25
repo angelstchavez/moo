@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "173997870344",
+    "firebase_url": "https://moo-app-6485e-default-rtdb.firebaseio.com",
     "project_id": "moo-app-6485e",
     "storage_bucket": "moo-app-6485e.appspot.com"
   },
@@ -12,7 +13,20 @@
           "package_name": "com.example.moo"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "173997870344-ujl5v03lnjm6ou5h98b7amt2kd3074gk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.moo",
+            "certificate_hash": "3e68ce4ec38bee7ffd094a9153deee5e0d7d573f"
+          }
+        },
+        {
+          "client_id": "173997870344-kjaen4lpgpurbb46g0l5om5jujq9oc4t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCay6nq74b0ku0-p1MkjhiYlGJhIjWuIkA"
@@ -20,7 +34,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "173997870344-kjaen4lpgpurbb46g0l5om5jujq9oc4t.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "173997870344-djs3mgi6btkqtbfh334fbkj04kvrqmon.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.moo"
+              }
+            }
+          ]
         }
       }
     }

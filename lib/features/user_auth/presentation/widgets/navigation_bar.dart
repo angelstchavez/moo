@@ -3,7 +3,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:moo/features/user_auth/presentation/pages/animal_page.dart';
-import 'package:moo/features/user_auth/presentation/pages/farm_page.dart';
+import 'package:moo/features/user_auth/presentation/pages/batches/batch_page.dart';
 import 'package:moo/features/user_auth/presentation/pages/home_page.dart';
 import 'package:moo/features/user_auth/presentation/pages/porfile_page.dart';
 import 'package:moo/features/user_auth/presentation/pages/production_page.dart';
@@ -21,7 +21,7 @@ class _NavBarState extends State<NavBar> {
   int currentIndex = 0;
   static const List body = [
     HomePage(),
-    FarmPage(),
+    BatchPage(),
     AnimalPage(),
     ProductionPage(),
     PorfilePage(),
