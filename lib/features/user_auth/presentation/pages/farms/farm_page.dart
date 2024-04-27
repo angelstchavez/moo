@@ -4,25 +4,25 @@ import 'package:flutter/material.dart';
 import 'package:moo/features/user_auth/presentation/pages/batches/addBatch.dart';
 import 'package:moo/features/user_auth/presentation/pages/batches/editBatch.dart';
 import 'package:moo/services/firebase_service_Batch.dart';
+import 'package:moo/services/firebase_service_Farm.dart';
 
-class BatchPage extends StatefulWidget {
-  const BatchPage({Key? key}) : super(key: key);
+class FarmPage extends StatefulWidget {
+  const FarmPage({Key? key}) : super(key: key);
 
   @override
-  State<BatchPage> createState() => _BatchPageState();
+  State<FarmPage> createState() => _FarmPageState();
 }
 
-class _BatchPageState extends State<BatchPage> {
-  final currentUser = FirebaseAuth.instance.currentUser!;
+class _FarmPageState extends State<FarmPage> {
+    final  currentUser = FirebaseAuth.instance.currentUser!;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text(currentUser.displayName!),
+        title:  Text(currentUser.uid),
       ),
       body: FutureBuilder(
-        future: getLotes(),
+        future: getFincas(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
@@ -36,32 +36,9 @@ class _BatchPageState extends State<BatchPage> {
             return Center(
               child: Text('Error: ${snapshot.error}'),
             );
-          } else if (snapshot.data == null || (snapshot.data as List).isEmpty) {
-            return  Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    onPressed: () async {
-                      await showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return const AddBatch();
-                        },
-                      );
-                      //Refresh
-                      setState(() {});
-                    },
-                    icon: const Icon(Icons.add),
-                    iconSize: 70,
-                    color: Colors.grey,
-                  ),
-                  const Text(
-                    'No se encontraron datos',
-                    style: TextStyle(fontSize: 20, color: Colors.grey),
-                  ),
-                ],
-              ),
+          } else if (snapshot.data == null) {
+            return const Center(
+              child: Text('No se encontraron datos'),
             );
           } else {
             return ListView.builder(
@@ -127,8 +104,7 @@ class _BatchPageState extends State<BatchPage> {
                         ],
                       ),
                       title: Text(snapshot.data?[index]["nombre"]),
-                      subtitle: Text(
-                          snapshot.data?[index]['cantidad'].toString() ?? ''),
+                      
                       trailing: PopupMenuButton<String>(
                         onSelected: (String value) async {
                           if (value == 'Editar') {
@@ -152,7 +128,7 @@ class _BatchPageState extends State<BatchPage> {
                             setState(() {
                               // Puedes agregar lógica de actualización aquí si es necesario
                             });
-                          } else {
+                          }else{
                             await deleteBatch(snapshot.data?[index]["uid"]);
                           }
                         },

@@ -10,6 +10,7 @@ import 'package:moo/features/user_auth/presentation/pages/sign_up_page.dart';
 import 'package:moo/features/user_auth/presentation/widgets/form_container_widget.dart';
 import 'package:moo/features/user_auth/presentation/widgets/square_title_widget.dart';
 import 'package:moo/global/common/toast.dart';
+import 'package:moo/services/firebase_service_Farm.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -253,6 +254,7 @@ class _LoginPageState extends State<LoginPage> {
 
     if (user != null) {
       showToast(message: "Inicio de sesión exitoso");
+    
       Navigator.pushNamed(context, "/home");
     } else {
       showToast(message: "Ha ocurrido un error");

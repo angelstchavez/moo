@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:moo/services/firebase_service_Batch.dart';
+import 'package:moo/services/firebase_service_Farm.dart';
 
 // ignore: camel_case_types
 class AddBatch extends StatefulWidget {
@@ -55,7 +57,10 @@ class _AddBatchState extends State<AddBatch> {
         ElevatedButton(
           onPressed: () async {
             int cantidad = int.tryParse(_cantidadController.text) ?? 0;
-            await addBatch_(_nombreController.text, cantidad).then((_) {
+            List<Map<String, dynamic>> fincas = await getFincas();
+            String fincaID = fincas[0]['uid'];
+
+            await addBatch(_nombreController.text, cantidad,fincaID).then((_) {
               Navigator.pop(context); // Cierra el diálogo
             });
           },
