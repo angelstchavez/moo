@@ -1,30 +1,46 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:moo/features/user_auth/presentation/pages/animals/addAnimal.dart';
 
 import 'package:moo/features/user_auth/presentation/pages/batches/addBatch.dart';
-import 'package:moo/features/user_auth/presentation/pages/batches/contentBatch.dart';
-import 'package:moo/features/user_auth/presentation/pages/batches/editBatch.dart';
+import 'package:moo/services/firebase_service_Animal.dart';
 import 'package:moo/services/firebase_service_Batch.dart';
-import 'package:moo/services/firebase_service_Farm.dart';
 
-class BatchPage extends StatefulWidget {
-  const BatchPage({Key? key}) : super(key: key);
+class ContentBatch extends StatefulWidget {
+  final String nombre;
+  final String finca;
+  final String id;
+  const ContentBatch(
+      {Key? key,
+      required this.nombre,
+      required this.id,
+      required this.finca})
+      : super(key: key);
 
   @override
-  State<BatchPage> createState() => _BatchPageState();
+  State<ContentBatch> createState() => _ContentBatchState();
 }
 
-class _BatchPageState extends State<BatchPage> {
+class _ContentBatchState extends State<ContentBatch> {
+  
   final currentUser = FirebaseAuth.instance.currentUser!;
+ 
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text(currentUser.displayName!),
+        leading: IconButton(
+          onPressed: () async {
+            Navigator.pop(context);
+          },
+          icon: const Icon(Icons.arrow_back_ios_new),
+        ),
+        //actions: [IconButton(onPressed: (){}, icon: const Icon(Icons.arrow_back_ios_new))],
+        title: Text(widget.nombre),
       ),
-      body: FutureBuilder(
-        future: getLotes(),
+      body:  FutureBuilder(
+        future: getVacasByLote(widget.id),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
@@ -82,7 +98,7 @@ class _BatchPageState extends State<BatchPage> {
                     ),
                     direction: DismissDirection.endToStart,
                     onDismissed: (direction) async {
-                      await deleteBatch(snapshot.data?[index]["uid"]);
+                      //await deleteBatch(snapshot.data?[index]["uid"]);
                       //snapshot.data?.removeAt(index);
                     },
                     confirmDismiss: (direction) async {
@@ -129,25 +145,20 @@ class _BatchPageState extends State<BatchPage> {
                         ],
                       ),
                       onTap: () async {
-                        String nombreLote = snapshot.data?[index]["nombre"];
-
+                        /* String nombreLote = snapshot.data?[index]["nombre"];
+                          
                         String idLote = snapshot.data?[index]["uid"];
-                        List<Map<String, dynamic>> fincas = await getFincas();
-                        String finca = fincas[0]['uid'];
                         Navigator.push(
-                          // ignore: use_build_context_synchronously
                           context,
-                          MaterialPageRoute(
-                              builder: (context) => ContentBatch(
-                                    nombre: nombreLote,
-                                    id: idLote,
-                                    finca: finca,
-                                  )),
-                        );
+                          MaterialPageRoute(builder: (context) =>  ContentBatch(
+                            nombre: nombreLote,
+                            id: idLote,
+                          )),
+                        ); */
                       },
                       title: Text(snapshot.data?[index]["nombre"]),
-                      subtitle: Text(
-                          snapshot.data?[index]['cantidad'].toString() ?? ''),
+                      subtitle: Text(snapshot.data?[index]["raza"]),
+                      //Text(snapshot.data?[index]['ra'].toString() ?? ''),
                       trailing: PopupMenuButton<String>(
                         onSelected: (String value) async {
                           if (value == 'Editar') {
@@ -158,7 +169,7 @@ class _BatchPageState extends State<BatchPage> {
                             String idLote = snapshot.data?[index]["uid"];
 
                             // Abrir la página de edición pasando los argumentos necesarios
-                            await showDialog(
+                            /*await showDialog(
                               context: context,
                               builder: (BuildContext context) {
                                 return EditBatch(
@@ -167,12 +178,12 @@ class _BatchPageState extends State<BatchPage> {
                                   id: idLote,
                                 );
                               },
-                            );
+                            );*/
                             setState(() {
                               // Puedes agregar lógica de actualización aquí si es necesario
                             });
                           } else {
-                            await deleteBatch(snapshot.data?[index]["uid"]);
+                            //await deleteBatch(snapshot.data?[index]["uid"]);
                           }
                         },
                         color: const Color.fromARGB(255, 201, 143, 122),
@@ -214,7 +225,7 @@ class _BatchPageState extends State<BatchPage> {
           await showDialog(
             context: context,
             builder: (BuildContext context) {
-              return const AddBatch();
+              return  AddAnimal(lote: widget.id,finca: widget.finca,);
             },
           );
           //Refresh

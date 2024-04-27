@@ -1,30 +1,23 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:ui';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:moo/features/user_auth/presentation/pages/animals/addAnimalBar.dart';
+import 'package:moo/services/firebase_service_Animal.dart';
 
-import 'package:moo/features/user_auth/presentation/pages/batches/addBatch.dart';
-import 'package:moo/features/user_auth/presentation/pages/batches/contentBatch.dart';
-import 'package:moo/features/user_auth/presentation/pages/batches/editBatch.dart';
-import 'package:moo/services/firebase_service_Batch.dart';
-import 'package:moo/services/firebase_service_Farm.dart';
-
-class BatchPage extends StatefulWidget {
-  const BatchPage({Key? key}) : super(key: key);
+class AnimalPage extends StatefulWidget {
+  const AnimalPage({super.key});
 
   @override
-  State<BatchPage> createState() => _BatchPageState();
+  State<AnimalPage> createState() => _AnimalPageState();
 }
 
-class _BatchPageState extends State<BatchPage> {
-  final currentUser = FirebaseAuth.instance.currentUser!;
+class _AnimalPageState extends State<AnimalPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text(currentUser.displayName!),
-      ),
-      body: FutureBuilder(
-        future: getLotes(),
+      body:  FutureBuilder(
+        future: getAllVacas(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
@@ -45,13 +38,13 @@ class _BatchPageState extends State<BatchPage> {
                 children: [
                   IconButton(
                     onPressed: () async {
-                      await showDialog(
+                      /* await showDialog(
                         context: context,
                         builder: (BuildContext context) {
                           return const AddBatch();
                         },
                       );
-                      //Refresh
+                      //Refresh */
                       setState(() {});
                     },
                     icon: const Icon(Icons.add),
@@ -82,7 +75,7 @@ class _BatchPageState extends State<BatchPage> {
                     ),
                     direction: DismissDirection.endToStart,
                     onDismissed: (direction) async {
-                      await deleteBatch(snapshot.data?[index]["uid"]);
+                      //await deleteBatch(snapshot.data?[index]["uid"]);
                       //snapshot.data?.removeAt(index);
                     },
                     confirmDismiss: (direction) async {
@@ -119,35 +112,27 @@ class _BatchPageState extends State<BatchPage> {
                       leading: const Column(
                         children: [
                           CircleAvatar(
-                            backgroundColor: Colors.green,
-                            child: Icon(
-                              Icons.add_box,
-                              color: Colors.white,
-                            ),
+                            backgroundImage: AssetImage('assets/vaca.jpg'),
                           ),
-                          SizedBox(height: 8),
+                          
+                          
                         ],
                       ),
                       onTap: () async {
-                        String nombreLote = snapshot.data?[index]["nombre"];
-
+                        /* String nombreLote = snapshot.data?[index]["nombre"];
+                          
                         String idLote = snapshot.data?[index]["uid"];
-                        List<Map<String, dynamic>> fincas = await getFincas();
-                        String finca = fincas[0]['uid'];
                         Navigator.push(
-                          // ignore: use_build_context_synchronously
                           context,
-                          MaterialPageRoute(
-                              builder: (context) => ContentBatch(
-                                    nombre: nombreLote,
-                                    id: idLote,
-                                    finca: finca,
-                                  )),
-                        );
+                          MaterialPageRoute(builder: (context) =>  ContentBatch(
+                            nombre: nombreLote,
+                            id: idLote,
+                          )),
+                        ); */
                       },
                       title: Text(snapshot.data?[index]["nombre"]),
-                      subtitle: Text(
-                          snapshot.data?[index]['cantidad'].toString() ?? ''),
+                      subtitle: Text(snapshot.data?[index]["raza"]),
+                      //Text(snapshot.data?[index]['ra'].toString() ?? ''),
                       trailing: PopupMenuButton<String>(
                         onSelected: (String value) async {
                           if (value == 'Editar') {
@@ -158,7 +143,7 @@ class _BatchPageState extends State<BatchPage> {
                             String idLote = snapshot.data?[index]["uid"];
 
                             // Abrir la página de edición pasando los argumentos necesarios
-                            await showDialog(
+                            /*await showDialog(
                               context: context,
                               builder: (BuildContext context) {
                                 return EditBatch(
@@ -167,12 +152,12 @@ class _BatchPageState extends State<BatchPage> {
                                   id: idLote,
                                 );
                               },
-                            );
+                            );*/
                             setState(() {
                               // Puedes agregar lógica de actualización aquí si es necesario
                             });
                           } else {
-                            await deleteBatch(snapshot.data?[index]["uid"]);
+                            //await deleteBatch(snapshot.data?[index]["uid"]);
                           }
                         },
                         color: const Color.fromARGB(255, 201, 143, 122),
@@ -211,12 +196,12 @@ class _BatchPageState extends State<BatchPage> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color.fromARGB(255, 201, 143, 122),
         onPressed: () async {
-          await showDialog(
+           await showDialog(
             context: context,
             builder: (BuildContext context) {
-              return const AddBatch();
+              return  const AddAnimalBar();
             },
-          );
+          ); 
           //Refresh
           setState(() {});
         },

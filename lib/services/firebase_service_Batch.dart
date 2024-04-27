@@ -29,6 +29,23 @@ Future<List<Map<String, dynamic>>> getLotes() async {
   return lotes;
 }
 
+Future<Map<String, dynamic>?> getLotesById(String uid) async {
+  // Obtener referencia al documento del lote mediante su uid
+  DocumentSnapshot snapshot =
+      await db.collection("lotes").doc(uid).get();
+
+  // Verificar si el documento existe
+ 
+    // Obtener los datos del documento
+    Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+    return {
+      'nombre': data['nombre'],
+      'cantidad': data['cantidad'],
+      'uid': snapshot.id,
+      'finca': data['finca'],
+    };
+  
+}
 
 Future<void> addBatch(String nombre, int cantidad, String finca) async {
   

@@ -27,51 +27,56 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: tabs.length,
-      child: Scaffold(
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              children: [
-                //greatings row
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Hola, Emilio!",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 24,
+      child: PopScope(
+
+        canPop: false,
+        
+        child: Scaffold(
+          body: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                children: [
+                  //greatings row
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Hola, Emilio!",
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                            ),
                           ),
-                        ),
-                        Text(
-                          DateFormat('dd MMMM, yyyy').format(DateTime.now()),
-                          style: const TextStyle(
-                            color: Colors.grey,
-                            fontSize: 16,
+                          Text(
+                            DateFormat('dd MMMM, yyyy').format(DateTime.now()),
+                            style: const TextStyle(
+                              color: Colors.grey,
+                              fontSize: 16,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                //Tabbar
-                TabBar(tabs: tabs),
-                const Expanded(
-                    child: TabBarView(children: [
-                  FarmTab(),
-                  BatchTab(),
-                  AnimalTab(),
-                  ProductionTab(),
-                ]))
-              ],
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  //Tabbar
+                  TabBar(tabs: tabs),
+                  const Expanded(
+                      child: TabBarView(children: [
+                    FarmTab(),
+                    BatchTab(),
+                    AnimalTab(),
+                    ProductionTab(),
+                  ]))
+                ],
+              ),
             ),
           ),
         ),

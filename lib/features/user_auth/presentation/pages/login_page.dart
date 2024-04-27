@@ -45,193 +45,195 @@ class _LoginPageState extends State<LoginPage> {
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Column(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.05),
-                          spreadRadius: 10,
-                          blurRadius: 10,
-                          offset: const Offset(1, 1),
-                        ),
-                      ],
+      body: SingleChildScrollView(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Column(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.05),
+                            spreadRadius: 10,
+                            blurRadius: 10,
+                            offset: const Offset(1, 1),
+                          ),
+                        ],
+                      ),
+                      child: Image.asset(
+                        'assets/icon.png',
+                        width: 120,
+                        height: 120,
+                        fit: BoxFit.contain,
+                      ),
                     ),
-                    child: Image.asset(
-                      'assets/icon.png',
-                      width: 120,
-                      height: 120,
-                      fit: BoxFit.contain,
+                    const SizedBox(height: 15),
+                    const Text(
+                      "Administra tu agricultura con facilidad.",
+                      style: TextStyle(
+                        fontSize: 14,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 15),
-                  const Text(
-                    "Administra tu agricultura con facilidad.",
-                    style: TextStyle(
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 25),
-              const Text(
-                "Bienvenido",
-                style: TextStyle(fontSize: 27, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              FormContainerWidget(
-                hintText: "Correo electrónico",
-                controller: _emailController,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              FormContainerWidget(
-                hintText: "Contraseña",
-                controller: _passwordController,
-                isPasswordField: true,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Center(
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const ResetPasswordPage()),
-                          (route) => false,
-                        );
-                      },
-                      child: const Text(
-                        "Olvidaste tu contraseña?",
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontWeight: FontWeight.bold,
+                  ],
+                ),
+                const SizedBox(height: 25),
+                const Text(
+                  "Bienvenido",
+                  style: TextStyle(fontSize: 27, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                FormContainerWidget(
+                  hintText: "Correo electrónico",
+                  controller: _emailController,
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                FormContainerWidget(
+                  hintText: "Contraseña",
+                  controller: _passwordController,
+                  isPasswordField: true,
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Center(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const ResetPasswordPage()),
+                            (route) => false,
+                          );
+                        },
+                        child: const Text(
+                          "Olvidaste tu contraseña?",
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              GestureDetector(
-                onTap: () {
-                  _signIn();
-                },
-                child: Container(
-                  width: double.infinity,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.green.shade800,
-                  ),
-                  child: Center(
-                    child: _isSigning
-                        ? const CircularProgressIndicator(
-                            color: Colors.white,
-                          )
-                        : const Text(
-                            "Iniciar sesión",
-                            style: TextStyle(
+                  ],
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    _signIn();
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.green.shade800,
+                    ),
+                    child: Center(
+                      child: _isSigning
+                          ? const CircularProgressIndicator(
                               color: Colors.white,
-                              fontWeight: FontWeight.bold,
+                            )
+                          : const Text(
+                              "Iniciar sesión",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              Row(
-                children: [
-                  Expanded(
-                      child: Divider(
-                    thickness: 0.5,
-                    color: Colors.grey[400],
-                  )),
-                  Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                      child: Text(
-                        "ó continua con",
-                        style: TextStyle(color: Colors.grey[700]),
-                      )),
-                  Expanded(
-                      child: Divider(
-                    thickness: 0.5,
-                    color: Colors.grey[400],
-                  )),
-                ],
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  GestureDetector(
-                    onTap: _signInWithGoogle,
-                    child: const SquareTitleWidget(
-                        imagePath: "assets/icon/google.png"),
-                  ),
-                  const SizedBox(
-                    width: 15,
-                  ),
-                  GestureDetector(
-                    onTap: _signInWithFacebook,
-                    child: const SquareTitleWidget(
-                        imagePath: "assets/icon/facebook.png"),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Center(
-                    child: Text(
-                      "No tienes cuenta? ",
+                const SizedBox(
+                  height: 15,
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                        child: Divider(
+                      thickness: 0.5,
+                      color: Colors.grey[400],
+                    )),
+                    Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        child: Text(
+                          "ó continua con",
+                          style: TextStyle(color: Colors.grey[700]),
+                        )),
+                    Expanded(
+                        child: Divider(
+                      thickness: 0.5,
+                      color: Colors.grey[400],
+                    )),
+                  ],
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    GestureDetector(
+                      onTap: _signInWithGoogle,
+                      child: const SquareTitleWidget(
+                          imagePath: "assets/icon/google.png"),
                     ),
-                  ),
-                  Center(
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const SignUpPage()),
-                          (route) => false,
-                        );
-                      },
-                      child: const Text(
-                        "Regístrate",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
+                    const SizedBox(
+                      width: 15,
+                    ),
+                    GestureDetector(
+                      onTap: _signInWithFacebook,
+                      child: const SquareTitleWidget(
+                          imagePath: "assets/icon/facebook.png"),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Center(
+                      child: Text(
+                        "No tienes cuenta? ",
+                      ),
+                    ),
+                    Center(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const SignUpPage()),
+                            (route) => false,
+                          );
+                        },
+                        child: const Text(
+                          "Regístrate",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -36,7 +36,7 @@ dependencies:
   firebase_core: ^2.30.0
   cloud_firestore: 
   firebase_auth: ^4.19.1
-  firebase_storage: ^11.7.1
+  firebase_storage: ^11.7.4
   fluttertoast: ^8.2.5
   font_awesome_flutter: ^10.7.0
   google_sign_in: ^6.2.1
@@ -81,6 +81,7 @@ flutter:
     - assets/icon/valla.png
     - assets/icon/vaca.png
     - assets/icon/carne.png
+    - assets/vaca.jpg
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

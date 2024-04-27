@@ -1,0 +1,125 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:moo/services/firebase_service_Animal.dart';
+import 'package:moo/services/firebase_service_Batch.dart';
+import 'package:moo/services/firebase_service_Farm.dart';
+
+// ignore: camel_case_types
+class AddAnimalBar extends StatefulWidget {
+ 
+  const AddAnimalBar({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  State<AddAnimalBar> createState() => _AddAnimalBarState();
+}
+
+// ignore: camel_case_types
+class _AddAnimalBarState extends State<AddAnimalBar> {
+  final TextEditingController _nombreController =
+      TextEditingController(text: '');
+  final TextEditingController _razaController = TextEditingController(text: '');
+  final TextEditingController _fechaController =
+      TextEditingController(text: '');
+
+  // Declarar la lista de lotes
+  List<Map<String, dynamic>> lotes = [];
+  String? selectedLoteUid;
+
+// Función para cargar los lotes
+  void cargarLotes() async {
+    lotes = await getLotes();
+    // Llamar setState para actualizar la interfaz
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    // Limpia los controladores cuando el widget se elimina del árbol
+    _nombreController.dispose();
+    _razaController.dispose();
+    _fechaController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    cargarLotes();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Agregar Animal'),
+      content: Column(
+          mainAxisSize: MainAxisSize.min,
+          verticalDirection: VerticalDirection.down,
+          children: [
+            TextField(
+              enableSuggestions: true,
+              controller: _nombreController,
+              autofocus: true,
+              decoration: const InputDecoration(
+                labelText: 'Nombre',
+                hintText: 'Ingrese el nombre del Animal',
+              ),
+            ),
+            TextField(
+              controller: _razaController,
+              decoration: const InputDecoration(
+                labelText: 'Raza',
+                hintText: 'Ingrese la Raza del animal',
+              ),
+              keyboardType: TextInputType.name,
+            ),
+            TextField(
+              controller: _fechaController,
+              decoration: const InputDecoration(
+                labelText: 'Fecha de Nacimiento',
+              ),
+              keyboardType: TextInputType.datetime,
+            ),
+            DropdownButton<String>(
+              hint: const Text('Seleccione un lote'),
+              // Mostrar los nombres de los lotes en el menú desplegable
+              items: lotes.map((lote) {
+                return DropdownMenuItem<String>(
+                  value: lote['uid'],
+                  child: Text(lote['nombre']), // Display the lote name
+                );
+              }).toList(),
+              // Manejar el cambio de selección y capturar el UID
+              value: selectedLoteUid, // Set the currently selected value
+              onChanged: (String? uid) {
+                setState(() {
+                  selectedLoteUid = uid;
+                });
+              },
+            )
+          ]),
+      actions: [
+        ElevatedButton(
+          onPressed: () async {
+            DateTime fechaNacimiento = DateTime.parse(_fechaController.text);
+            List<Map<String, dynamic>> fincas = await getFincas();
+            String fincaID = fincas[0]['uid'];
+            await addAnimal(_nombreController.text, _razaController.text,
+                    fechaNacimiento, selectedLoteUid!, fincaID)
+                .then((_) {
+              Navigator.pop(context); // Cierra el diálogo
+            });
+          },
+          child: const Text('Guardar'),
+        ),
+        ElevatedButton(
+          onPressed: () async {
+            Navigator.pop(context); // Cierra el diálogo sin guardar
+          },
+          child: const Text('Cancelar'),
+        ),
+      ],
+    );
+  }
+}

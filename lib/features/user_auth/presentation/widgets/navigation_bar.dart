@@ -2,7 +2,8 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:moo/features/user_auth/presentation/pages/animal_page.dart';
+import 'package:moo/features/user_auth/presentation/pages/animals/addAnimal.dart';
+import 'package:moo/features/user_auth/presentation/pages/animals/animal_page.dart';
 import 'package:moo/features/user_auth/presentation/pages/batches/batch_page.dart';
 import 'package:moo/features/user_auth/presentation/pages/farms/farm_page.dart';
 import 'package:moo/features/user_auth/presentation/pages/home_page.dart';
@@ -23,7 +24,7 @@ class _NavBarState extends State<NavBar> {
   static const List body = [
     HomePage(),
     BatchPage(),
-    FarmPage(),
+    AnimalPage(),
     ProductionPage(),
     PorfilePage(),
     
