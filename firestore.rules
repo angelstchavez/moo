@@ -1,0 +1,15 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /fincas/{finca}{
+      allow create: if true;
+    }
+    match /lotes/{lote}{
+      allow read, write: if request.auth.uid == lote;
+    }
+    match /animales/{animal}{
+      allow read, write: if request.auth != null;
+    }
+  }
+}

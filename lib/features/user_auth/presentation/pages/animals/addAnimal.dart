@@ -73,6 +73,10 @@ class _AddAnimalState extends State<AddAnimal> {
             ),
             keyboardType: TextInputType.datetime,
           ),
+          IconButton(onPressed: (){
+            
+          }, 
+          icon: const Icon(Icons.add_photo_alternate))
           
         ],
       ),

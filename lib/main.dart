@@ -19,6 +19,7 @@ Future<void> main() async {
       appId: "1:173997870344:web:fda390459bc809ff7530bd",
       messagingSenderId: "173997870344",
       projectId: "moo-app-6485e",
+      storageBucket:"gs://moo-app-6485e.appspot.com"
     ));
   }
   await Firebase.initializeApp();
