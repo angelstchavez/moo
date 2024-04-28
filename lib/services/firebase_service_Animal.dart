@@ -28,6 +28,7 @@ Future<List<Map<String, dynamic>>> getVacasByLote(String lote) async {
       'user': data['user'],
       'finca': data['finca'],
       'lote':data['lote'],
+      'img':data['img'],
     };
     vacas.add(vaca);
   }
@@ -58,6 +59,7 @@ Future<List<Map<String, dynamic>>> getAllVacas() async {
       'user': data['user'],
       'finca': data['finca'],
       'lote':data['lote'],
+      'img':data['img'],
     };
     vacas.add(vaca);
   }
@@ -84,7 +86,7 @@ Future<Map<String, dynamic>?> getLotesById(String uid) async {
   
 }
 
-Future<void> addAnimal(String nombre, String raza, DateTime fecha,String lote,String finca) async {
+Future<void> addAnimal(String nombre, String raza, DateTime fecha,String lote,String finca,String image) async {
  
  String formattedDate = "${fecha.year}-${fecha.month}-${fecha.day}";
   await db.collection('animales').add({
@@ -96,6 +98,7 @@ Future<void> addAnimal(String nombre, String raza, DateTime fecha,String lote,St
       'user': currentUser.uid,
       'finca': finca,
       'lote':lote,
+      'img': image
   });
 }
 

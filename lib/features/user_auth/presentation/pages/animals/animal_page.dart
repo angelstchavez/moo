@@ -13,10 +13,11 @@ class AnimalPage extends StatefulWidget {
 }
 
 class _AnimalPageState extends State<AnimalPage> {
+  String imagen='';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:  FutureBuilder(
+      body: FutureBuilder(
         future: getAllVacas(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -107,17 +108,17 @@ class _AnimalPageState extends State<AnimalPage> {
 
                       return result;
                     },
+                    
                     key: Key(snapshot.data?[index]["uid"]),
                     child: ListTile(
-                      leading: const Column(
-                        children: [
-                          CircleAvatar(
-                            backgroundImage: AssetImage('assets/vaca.jpg'),
-                          ),
-                          
-                          
-                        ],
+                      
+                      leading: CircleAvatar(
+                        radius: 27,
+                        
+                        backgroundImage: NetworkImage('${snapshot.data?[index]['img']}'),
+                        
                       ),
+
                       onTap: () async {
                         /* String nombreLote = snapshot.data?[index]["nombre"];
                           
@@ -196,12 +197,12 @@ class _AnimalPageState extends State<AnimalPage> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color.fromARGB(255, 201, 143, 122),
         onPressed: () async {
-           await showDialog(
+          await showDialog(
             context: context,
             builder: (BuildContext context) {
-              return  const AddAnimalBar();
+              return const AddAnimalBar();
             },
-          ); 
+          );
           //Refresh
           setState(() {});
         },

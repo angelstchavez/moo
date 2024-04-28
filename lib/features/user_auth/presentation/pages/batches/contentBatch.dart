@@ -132,18 +132,17 @@ class _ContentBatchState extends State<ContentBatch> {
                     },
                     key: Key(snapshot.data?[index]["uid"]),
                     child: ListTile(
-                      leading: const Column(
-                        children: [
+                      leading: 
+                        
                           CircleAvatar(
-                            backgroundColor: Colors.green,
-                            child: Icon(
-                              Icons.add_box,
-                              color: Colors.white,
-                            ),
+                            radius: 27,
+
+                            backgroundImage: NetworkImage('${snapshot.data?[index]['img']}'),
+                            
                           ),
-                          SizedBox(height: 8),
-                        ],
-                      ),
+                          
+                        
+                      
                       onTap: () async {
                         /* String nombreLote = snapshot.data?[index]["nombre"];
                           

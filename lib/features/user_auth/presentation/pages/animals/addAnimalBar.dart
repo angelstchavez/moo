@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +11,6 @@ import 'package:moo/services/firebase_service_Farm.dart';
 
 // ignore: camel_case_types
 class AddAnimalBar extends StatefulWidget {
- 
   const AddAnimalBar({
     Key? key,
   }) : super(key: key);
@@ -26,6 +26,8 @@ class _AddAnimalBarState extends State<AddAnimalBar> {
   final TextEditingController _razaController = TextEditingController(text: '');
   final TextEditingController _fechaController =
       TextEditingController(text: '');
+
+  String imageUrl = '';
 
   // Declarar la lista de lotes
   List<Map<String, dynamic>> lotes = [];
@@ -53,6 +55,14 @@ class _AddAnimalBarState extends State<AddAnimalBar> {
     cargarLotes();
   }
 
+  List<String> razas = [
+    'Gyroland F1 (Gyr + Holstein)',
+    'Simmbrah F1 (Simmental + Brahman)',
+    'Brahamoland F1 (Brahman + Holstein)',
+    // Add other breeds here
+  ];
+  String _selectedRaza = '';
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -70,13 +80,19 @@ class _AddAnimalBarState extends State<AddAnimalBar> {
                 hintText: 'Ingrese el nombre del Animal',
               ),
             ),
-            TextField(
-              controller: _razaController,
-              decoration: const InputDecoration(
-                labelText: 'Raza',
-                hintText: 'Ingrese la Raza del animal',
+            DropdownSearch<String>(
+              
+              
+              dropdownDecoratorProps: const DropDownDecoratorProps(
+                dropdownSearchDecoration: InputDecoration(
+                  labelText: "Raza",
+                  hintText: "Selecciona una Raza",
+                  
+                ),
               ),
-              keyboardType: TextInputType.name,
+              items: razas,
+              selectedItem: _razaController.text, // Set the initial selection
+              onChanged:print
             ),
             TextField(
               controller: _fechaController,
@@ -102,30 +118,31 @@ class _AddAnimalBarState extends State<AddAnimalBar> {
                 });
               },
             ),
-            IconButton(onPressed: ()async{
+            IconButton(
+                onPressed: () async {
+                  final file =
+                      await ImagePicker().pickImage(source: ImageSource.camera);
+                  if (file == null) return;
 
-              final file = await ImagePicker().pickImage(source: ImageSource.camera);
-              if (file == null) return;
+                  String fileName =
+                      DateTime.now().microsecondsSinceEpoch.toString();
 
-              String fileName = DateTime.now().microsecondsSinceEpoch.toString();
+                  //creamos el folder en firebase storage
+                  Reference referenceRoot = FirebaseStorage.instance.ref();
+                  Reference referenceDireImages = referenceRoot.child('images');
 
-              //creamos el folder en firebase storage
-              Reference referenceRoot = FirebaseStorage.instance.ref();
-              Reference referenceDireImages =referenceRoot.child('images');
+                  Reference referenceImageUpload =
+                      referenceDireImages.child(fileName);
 
-              Reference referenceImageUpload = referenceDireImages.child(fileName);
+                  try {
+                    await referenceImageUpload.putFile(File(file.path));
 
-              try{
-                await referenceImageUpload.putFile(File(file.path));
-              }catch(e){
-
-                //some
-              }
-
-                
-
-             }, icon: const Icon(Icons.add_photo_alternate)
-            )
+                    imageUrl = await referenceImageUpload.getDownloadURL();
+                  } catch (e) {
+                    //some
+                  }
+                },
+                icon: const Icon(Icons.add_photo_alternate))
           ]),
       actions: [
         ElevatedButton(
@@ -134,7 +151,7 @@ class _AddAnimalBarState extends State<AddAnimalBar> {
             List<Map<String, dynamic>> fincas = await getFincas();
             String fincaID = fincas[0]['uid'];
             await addAnimal(_nombreController.text, _razaController.text,
-                    fechaNacimiento, selectedLoteUid!, fincaID)
+                    fechaNacimiento, selectedLoteUid!, fincaID, imageUrl)
                 .then((_) {
               Navigator.pop(context); // Cierra el diálogo
             });

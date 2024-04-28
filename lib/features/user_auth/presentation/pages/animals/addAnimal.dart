@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:moo/services/firebase_service_Animal.dart';
 import 'package:moo/services/firebase_service_Batch.dart';
 import 'package:moo/services/firebase_service_Farm.dart';
@@ -25,6 +29,7 @@ class _AddAnimalState extends State<AddAnimal> {
   final TextEditingController _razaController = TextEditingController(text: '');
   final TextEditingController _fechaController = TextEditingController(text: '');    
 
+  String imageUrl='';
   
 
   
@@ -73,10 +78,32 @@ class _AddAnimalState extends State<AddAnimal> {
             ),
             keyboardType: TextInputType.datetime,
           ),
-          IconButton(onPressed: (){
-            
-          }, 
-          icon: const Icon(Icons.add_photo_alternate))
+          IconButton(onPressed: ()async{
+
+              final file = await ImagePicker().pickImage(source: ImageSource.camera);
+              if (file == null) return;
+
+              String fileName = DateTime.now().microsecondsSinceEpoch.toString();
+
+              //creamos el folder en firebase storage
+              Reference referenceRoot = FirebaseStorage.instance.ref();
+              Reference referenceDireImages =referenceRoot.child('images');
+
+              Reference referenceImageUpload = referenceDireImages.child(fileName);
+
+              try{
+                await referenceImageUpload.putFile(File(file.path));
+
+                imageUrl = await referenceImageUpload.getDownloadURL();
+              }catch(e){
+
+                //some
+              }
+
+                
+
+             }, icon: const Icon(Icons.add_photo_alternate)
+            )
           
         ],
       ),
@@ -87,7 +114,7 @@ class _AddAnimalState extends State<AddAnimal> {
             
             DateTime fechaNacimiento = DateTime.parse(_fechaController.text);
 
-            await addAnimal(_nombreController.text,_razaController.text,fechaNacimiento,widget.lote,widget.finca).then((_) {
+            await addAnimal(_nombreController.text,_razaController.text,fechaNacimiento,widget.lote,widget.finca,imageUrl).then((_) {
               Navigator.pop(context); // Cierra el diálogo
             });
           },
