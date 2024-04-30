@@ -34,7 +34,9 @@ Future<List<Map<String, dynamic>>> getVacasByLote(String lote) async {
   }
   
   // Simular un pequeño retraso antes de devolver los lotes
+  
   await Future.delayed(const Duration(milliseconds: 5));
+  
   return vacas;
 }
 

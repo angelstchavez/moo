@@ -10,12 +10,18 @@ import 'package:moo/services/firebase_service_Farm.dart';
 class BatchPage extends StatefulWidget {
   const BatchPage({Key? key}) : super(key: key);
 
+
   @override
   State<BatchPage> createState() => _BatchPageState();
 }
 
 class _BatchPageState extends State<BatchPage> {
   final currentUser = FirebaseAuth.instance.currentUser!;
+
+  
+
+  
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,7 +30,7 @@ class _BatchPageState extends State<BatchPage> {
         title: Text(currentUser.displayName!),
       ),
       body: FutureBuilder(
-        future: getLotes(),
+        future: getLotesByUser(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
@@ -144,6 +150,9 @@ class _BatchPageState extends State<BatchPage> {
                                     finca: finca,
                                   )),
                         );
+
+                        
+
                       },
                       title: Text(snapshot.data?[index]["nombre"]),
                       subtitle: Text(

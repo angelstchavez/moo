@@ -35,7 +35,7 @@ class _AddAnimalBarState extends State<AddAnimalBar> {
 
 // Función para cargar los lotes
   void cargarLotes() async {
-    lotes = await getLotes();
+    lotes = await getLotesByUser();
     // Llamar setState para actualizar la interfaz
     setState(() {});
   }

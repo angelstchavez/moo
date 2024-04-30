@@ -4,7 +4,7 @@ import 'package:moo/services/firebase_service_Farm.dart';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
 final  currentUser = FirebaseAuth.instance.currentUser!;
-Future<List<Map<String, dynamic>>> getLotes() async {
+Future<List<Map<String, dynamic>>> getLotesByUser() async {
   List<Map<String, dynamic>> lotes = [];
   // Obtener referencia a la colección de lotes
   CollectionReference collectionReferenceLotes = db.collection("lotes");
@@ -64,6 +64,14 @@ Future<void> updateBatch(String uid, String newNombre, int newCantidad) async {
     'cantidad': newCantidad,
   });
 }
+
+Future<void> updateBatchLenght(String uid, int newCantidad) async {
+  await db.collection('lotes').doc(uid).update({
+    'cantidad': newCantidad,
+  });
+}
+
+
 
 Future<void> deleteBatch(String uid) async {
   await db.collection('lotes').doc(uid).delete();
