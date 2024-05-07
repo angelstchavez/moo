@@ -1,15 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import 'package:moo/features/user_auth/presentation/pages/batches/addBatch.dart';
 import 'package:moo/features/user_auth/presentation/pages/batches/contentBatch.dart';
 import 'package:moo/features/user_auth/presentation/pages/batches/editBatch.dart';
+import 'package:moo/global/common/toast.dart';
 import 'package:moo/services/firebase_service_Batch.dart';
 import 'package:moo/services/firebase_service_Farm.dart';
 
 class BatchPage extends StatefulWidget {
   const BatchPage({Key? key}) : super(key: key);
-
 
   @override
   State<BatchPage> createState() => _BatchPageState();
@@ -18,10 +19,6 @@ class BatchPage extends StatefulWidget {
 class _BatchPageState extends State<BatchPage> {
   final currentUser = FirebaseAuth.instance.currentUser!;
 
-  
-
-  
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,48 +91,75 @@ class _BatchPageState extends State<BatchPage> {
                     confirmDismiss: (direction) async {
                       bool result = false;
 
-                      result = await showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: const Icon(Icons.warning_amber_rounded),
-                              iconColor: Colors.yellow,
-                              content: Text(
-                                  '¿Está seguro de eliminar a ${snapshot.data?[index]["nombre"]}'),
-                              actions: [
-                                TextButton(
-                                    onPressed: () {
-                                      return Navigator.pop(context, false);
-                                    },
-                                    child: const Text('Cancelar',
-                                        style: TextStyle(color: Colors.red))),
-                                TextButton(
-                                    onPressed: () {
-                                      return Navigator.pop(context, true);
-                                    },
-                                    child: const Text('Aceptar'))
-                              ],
-                            );
-                          });
+                      if (snapshot.data?[index]['cantidad'] == null ||
+                          snapshot.data?[index]['cantidad'] == 0) {
+                        result = await showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Icon(Icons.warning_amber_rounded),
+                                iconColor: Colors.yellow,
+                                content: Text(
+                                    '¿Está seguro de eliminar a ${snapshot.data?[index]["nombre"]}'),
+                                actions: [
+                                  TextButton(
+                                      onPressed: () {
+                                        return Navigator.pop(context, false);
+                                      },
+                                      child: const Text('Cancelar',
+                                          style: TextStyle(color: Colors.red))),
+                                  TextButton(
+                                      onPressed: () {
+                                        showToast(
+                                            message:
+                                                'Lote eliminado exitosamente');
+                                        return Navigator.pop(context, true);
+                                      },
+                                      child: const Text('Aceptar'))
+                                ],
+                              );
+                            });
+                      } else {
+                        result = await showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Icon(Icons.info),
+                                iconColor: Colors.yellow,
+                                iconPadding: const EdgeInsets.all(50),
+                                content: Text(
+                                    'No puedes eliminar el "${snapshot.data?[index]["nombre"]}"\nPorque tiene ${snapshot.data?[index]["cantidad"].toString() ?? ''} Animales '),
+                                actions: [
+                                  TextButton(
+                                      onPressed: () {
+                                        return Navigator.pop(context, false);
+                                      },
+                                      child: const Text('OK',
+                                          style:
+                                              TextStyle(color: Colors.blue))),
+                                ],
+                              );
+                            });
+                      }
 
                       return result;
                     },
                     key: Key(snapshot.data?[index]["uid"]),
                     child: ListTile(
-                      leading: const Column(
-                        children: [
-                          CircleAvatar(
-                            backgroundColor: Colors.green,
-                            child: Icon(
-                              Icons.add_box,
-                              color: Colors.white,
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                        ],
+                      leading: CircleAvatar(
+                        radius: 27,
+                        backgroundImage: snapshot.data?[index]
+                                                ['img'] ==
+                                            null
+                                        ? const NetworkImage(
+                                            'https://acortar.link/twXsOQ')
+                                        : NetworkImage(
+                                            '${snapshot.data?[index]['img']}')
+                            
                       ),
                       onTap: () async {
                         String nombreLote = snapshot.data?[index]["nombre"];
+                        String? imagen = snapshot.data?[index]["img"];
 
                         String idLote = snapshot.data?[index]["uid"];
                         List<Map<String, dynamic>> fincas = await getFincas();
@@ -148,11 +172,9 @@ class _BatchPageState extends State<BatchPage> {
                                     nombre: nombreLote,
                                     id: idLote,
                                     finca: finca,
+                                    img: imagen
                                   )),
-                        );
-
-                        
-
+                        ).then((value) => setState(() {}));
                       },
                       title: Text(snapshot.data?[index]["nombre"]),
                       subtitle: Text(

@@ -12,8 +12,13 @@ class ContentBatch extends StatefulWidget {
   final String nombre;
   final String finca;
   final String id;
+  final String? img;
   const ContentBatch(
-      {Key? key, required this.nombre, required this.id, required this.finca})
+      {Key? key,
+      required this.nombre,
+      required this.id,
+      required this.finca,
+      required this.img})
       : super(key: key);
 
   @override
@@ -22,9 +27,9 @@ class ContentBatch extends StatefulWidget {
 
 class _ContentBatchState extends State<ContentBatch> {
   final currentUser = FirebaseAuth.instance.currentUser!;
-int dataLength=0;
+  int dataLength = 0;
 
- @override
+  @override
   void initState() {
     super.initState();
     loadData(); // Método para cargar los datos al abrir la página
@@ -38,19 +43,15 @@ int dataLength=0;
     setState(() {
       dataLength = data.length;
     });
-    
   }
-  
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          onPressed: ()  {
-             Navigator.pop(context);
-            
+          onPressed: () {
+            Navigator.pop(context);
           },
           icon: const Icon(Icons.arrow_back_ios_new),
         ),
@@ -60,20 +61,40 @@ int dataLength=0;
       body: Column(
         children: [
           Container(
+            color: Colors.brown.shade600,
             width: MediaQuery.of(context).size.width,
-            child:  Card(
+            child: Column(
               // Aquí puedes personalizar tu Card según tus necesidades
-              color: Colors.green.shade200,
-              child: Padding(
-                
-                padding:  const EdgeInsets.all(50.0),
-                child: Text(
-                  dataLength != null
-                      ? 'Número de elementos: $dataLength'
-                      : '0',
-                  style: const TextStyle(fontSize: 18),
-                ),
-              ),
+              children: [
+                Card(
+                  color: Colors.brown.shade400,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        AspectRatio(
+                          aspectRatio:
+                              16 / 9, // Proporción deseada (puedes ajustarla)
+                          child: widget.img != null
+                              ? Image.network('${widget.img}',
+                                  fit: BoxFit.cover)
+                              : Image.network('https://acortar.link/m8RozS',
+                                  fit: BoxFit.cover),
+                        ),
+                        SizedBox(
+                            height: 8), // Espacio entre la imagen y el texto
+                        Text(
+                          dataLength != null
+                              ? 'Total de animales: $dataLength'
+                              : '0',
+                          style: const TextStyle(
+                              fontSize: 18, color: Colors.white),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              ],
             ),
           ),
           Expanded(
@@ -121,10 +142,8 @@ int dataLength=0;
                     ),
                   );
                 } else {
-                  
-                   dataLength = (snapshot.data as List).length;
+                  dataLength = (snapshot.data as List).length;
                   return ListView.builder(
-                    
                     itemCount: snapshot.data?.length,
                     itemBuilder: (BuildContext context, int index) {
                       // Aquí retornamos una Card antes de un ListTile
@@ -143,7 +162,9 @@ int dataLength=0;
                               ),
                               direction: DismissDirection.endToStart,
                               onDismissed: (direction) async {
-                                //await deleteBatch(snapshot.data?[index]["uid"]);
+                                await deleteAnimal(
+                                    snapshot.data?[index]["uid"]);
+
                                 //snapshot.data?.removeAt(index);
                               },
                               confirmDismiss: (direction) async {
@@ -157,7 +178,7 @@ int dataLength=0;
                                           Icons.warning_amber_rounded),
                                       iconColor: Colors.yellow,
                                       content: Text(
-                                        '¿Está seguro de eliminar a ${snapshot.data?[index]["nombre"]}',
+                                        '¿Está seguro de eliminar al animal "${snapshot.data?[index]["nombre"]}"',
                                       ),
                                       actions: [
                                         TextButton(
@@ -186,11 +207,14 @@ int dataLength=0;
                               key: Key(snapshot.data?[index]["uid"]),
                               child: ListTile(
                                 leading: CircleAvatar(
-                                  radius: 27,
-                                  backgroundImage: NetworkImage(
-                                    '${snapshot.data?[index]['img']}',
-                                  ),
-                                ),
+                                    radius: 27,
+                                    backgroundImage: snapshot.data?[index]
+                                                ['img'] ==
+                                            null
+                                        ? const NetworkImage(
+                                            'https://acortar.link/hrux2P')
+                                        : NetworkImage(
+                                            '${snapshot.data?[index]['img']}')),
                                 onTap: () async {
                                   /* String nombreLote = snapshot.data?[index]["nombre"];
                   
@@ -285,7 +309,11 @@ int dataLength=0;
                 dataLenght: dataLength,
               );
             },
-          );
+          ).then((value) {
+            setState(() {
+              loadData();
+            });
+          });
           //Refresh
           setState(() {});
         },

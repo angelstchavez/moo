@@ -32,7 +32,7 @@ class _AddAnimalState extends State<AddAnimal> {
   final TextEditingController _fechaController =
       TextEditingController(text: '');
 
-  String imageUrl = '';
+  String? imageUrl;
 
   @override
   void dispose() {
@@ -141,7 +141,7 @@ class _AddAnimalState extends State<AddAnimal> {
           DateTime fechaNacimiento = DateTime.parse(_fechaController.text);
 
           await addAnimal(_nombreController.text, _razaController.text,
-              fechaNacimiento, widget.lote, widget.finca, imageUrl)
+            fechaNacimiento, widget.lote, widget.finca, imageUrl)
               .then((_) {
             Navigator.pop(context); 
             

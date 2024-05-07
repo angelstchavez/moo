@@ -20,6 +20,7 @@ Future<List<Map<String, dynamic>>> getLotesByUser() async {
       'cantidad': data['cantidad'],
       'uid': documento.id,
       'finca': data['finca'],
+      'img': data['img'],
     };
     lotes.add(lote);
   }
@@ -29,32 +30,17 @@ Future<List<Map<String, dynamic>>> getLotesByUser() async {
   return lotes;
 }
 
-Future<Map<String, dynamic>?> getLotesById(String uid) async {
-  // Obtener referencia al documento del lote mediante su uid
-  DocumentSnapshot snapshot =
-      await db.collection("lotes").doc(uid).get();
 
-  // Verificar si el documento existe
- 
-    // Obtener los datos del documento
-    Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
-    return {
-      'nombre': data['nombre'],
-      'cantidad': data['cantidad'],
-      'uid': snapshot.id,
-      'finca': data['finca'],
-    };
-  
-}
 
-Future<void> addBatch(String nombre, int cantidad, String finca) async {
+Future<void> addBatch(String nombre, String finca, String? image) async {
   
   
   await db.collection('lotes').add({
     'nombre': nombre,
-    'cantidad': cantidad,
+    'cantidad': 0,
     'finca': finca,
-    'user':currentUser.uid
+    'user':currentUser.uid,
+    'img':image
   });
 }
 

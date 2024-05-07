@@ -1,9 +1,6 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:moo/services/firebase_service_Farm.dart';
+
 
 FirebaseFirestore db = FirebaseFirestore.instance;
 final  currentUser = FirebaseAuth.instance.currentUser!;
@@ -88,7 +85,7 @@ Future<Map<String, dynamic>?> getLotesById(String uid) async {
   
 }
 
-Future<void> addAnimal(String nombre, String raza, DateTime fecha,String lote,String finca,String image) async {
+Future<void> addAnimal(String nombre, String raza, DateTime fecha,String lote,String finca,String? image) async {
  
  String formattedDate = "${fecha.year}-${fecha.month}-${fecha.day}";
   await db.collection('animales').add({
@@ -116,7 +113,7 @@ Future<void> updateBatch(String uid, String newNombre, int newCantidad) async {
   });
 }
 
-Future<void> deleteBatch(String uid) async {
+Future<void> deleteAnimal(String uid) async {
   
-  await db.collection('lotes').doc(uid).delete();
+  await db.collection('animales').doc(uid).delete();
 }
