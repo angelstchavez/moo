@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:moo/features/user_auth/presentation/pages/animals/addAnimal.dart';
+import 'package:moo/features/user_auth/presentation/pages/animals/contentAnimal.dart';
 
 import 'package:moo/features/user_auth/presentation/pages/batches/addBatch.dart';
 import 'package:moo/features/user_auth/presentation/pages/batches/batch_page.dart';
@@ -80,7 +81,7 @@ class _ContentBatchState extends State<ContentBatch> {
                                   fit: BoxFit.cover)
                               : Image.network('https://acortar.link/m8RozS',
                                   fit: BoxFit.cover),
-                        ),
+                        ),const 
                         SizedBox(
                             height: 8), // Espacio entre la imagen y el texto
                         Text(
@@ -162,8 +163,13 @@ class _ContentBatchState extends State<ContentBatch> {
                               ),
                               direction: DismissDirection.endToStart,
                               onDismissed: (direction) async {
-                                await deleteAnimal(
-                                    snapshot.data?[index]["uid"]);
+                                await deleteAnimal(snapshot.data?[index]["uid"])
+                                    .then((value) {
+                                  updateBatchLenght(widget.id, dataLength - 1);
+                                  setState(() {
+                                    loadData();
+                                  });
+                                });
 
                                 //snapshot.data?.removeAt(index);
                               },
@@ -216,16 +222,21 @@ class _ContentBatchState extends State<ContentBatch> {
                                         : NetworkImage(
                                             '${snapshot.data?[index]['img']}')),
                                 onTap: () async {
-                                  /* String nombreLote = snapshot.data?[index]["nombre"];
+                                   String nombreAnimal = snapshot.data?[index]["nombre"];
+                                  String? imgAnimal = snapshot.data?[index]["img"];
                   
-                  String idLote = snapshot.data?[index]["uid"];
+                  String idAnimal = snapshot.data?[index]["uid"];
+
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) =>  ContentBatch(
-                      nombre: nombreLote,
-                      id: idLote,
-                    )),
-                  ); */
+                    MaterialPageRoute(builder: (context) =>  ContentAnimal(
+                      nombre: nombreAnimal,
+                      id: idAnimal,
+                      img: imgAnimal
+                    
+                    )
+                    ),
+                  ); 
                                 },
                                 title: Text(snapshot.data?[index]["nombre"]),
                                 subtitle: Text(snapshot.data?[index]["raza"]),
@@ -307,6 +318,7 @@ class _ContentBatchState extends State<ContentBatch> {
                 lote: widget.id,
                 finca: widget.finca,
                 dataLenght: dataLength,
+                
               );
             },
           ).then((value) {

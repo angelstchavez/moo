@@ -25,6 +25,7 @@ Future<List<Map<String, dynamic>>> getFincas() async {
       'fecha': data['fecha'],
       'uid': documento.id,
       'usuario': data['usuario'],
+      'tamano': data['tamano'],
       
     };
     fincas.add(finca);

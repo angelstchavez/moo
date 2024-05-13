@@ -22,10 +22,14 @@ class _PorfilePageState extends State<PorfilePage> {
               const SizedBox(
                 height: 50,
               ),
-              const Icon(
+              const CircleAvatar(
+                radius: 50,
+                child:  Icon(
                 Icons.person,
                 size: 72,
                 color: Colors.green,
+              ),
+
               ),
               const SizedBox(
                 height: 10,
@@ -39,6 +43,7 @@ class _PorfilePageState extends State<PorfilePage> {
               const SizedBox(
                 height: 50,
               ),
+              
             ],
           ),
         ],

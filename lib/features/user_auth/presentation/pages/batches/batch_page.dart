@@ -1,7 +1,7 @@
+import 'package:anim_search_bar/anim_search_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-
 import 'package:moo/features/user_auth/presentation/pages/batches/addBatch.dart';
 import 'package:moo/features/user_auth/presentation/pages/batches/contentBatch.dart';
 import 'package:moo/features/user_auth/presentation/pages/batches/editBatch.dart';
@@ -18,15 +18,36 @@ class BatchPage extends StatefulWidget {
 
 class _BatchPageState extends State<BatchPage> {
   final currentUser = FirebaseAuth.instance.currentUser!;
+  final TextEditingController textController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text(currentUser.displayName!),
+        //title: Text(currentUser.displayName!),
+        flexibleSpace: AnimSearchBar(
+          textFieldColor: Colors.green.shade50,
+          onSubmitted: (_) => true,
+            width: MediaQuery.of(context).size.width,
+            textController: textController,
+            onSuffixTap: (){
+              setState(() {
+                textController.clear();
+              });
+            },
+            helpText: 'Buscar...',
+            autoFocus: true,
+            closeSearchOnSuffixTap: true,
+            animationDurationInMilli: 50,
+            boxShadow: true,
+            color: Colors.green.shade500,
+            searchIconColor: Colors.white,
+           suffixIcon: const  Icon(Icons.close,color: Colors.white,),
       ),
-      body: FutureBuilder(
+      ),
+      
+      body:  FutureBuilder(
         future: getLotesByUser(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -147,16 +168,12 @@ class _BatchPageState extends State<BatchPage> {
                     key: Key(snapshot.data?[index]["uid"]),
                     child: ListTile(
                       leading: CircleAvatar(
-                        radius: 27,
-                        backgroundImage: snapshot.data?[index]
-                                                ['img'] ==
-                                            null
-                                        ? const NetworkImage(
-                                            'https://acortar.link/twXsOQ')
-                                        : NetworkImage(
-                                            '${snapshot.data?[index]['img']}')
-                            
-                      ),
+                          radius: 27,
+                          backgroundImage: snapshot.data?[index]['img'] == null
+                              ? const NetworkImage(
+                                  'https://acortar.link/twXsOQ')
+                              : NetworkImage(
+                                  '${snapshot.data?[index]['img']}')),
                       onTap: () async {
                         String nombreLote = snapshot.data?[index]["nombre"];
                         String? imagen = snapshot.data?[index]["img"];
@@ -169,11 +186,10 @@ class _BatchPageState extends State<BatchPage> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => ContentBatch(
-                                    nombre: nombreLote,
-                                    id: idLote,
-                                    finca: finca,
-                                    img: imagen
-                                  )),
+                                  nombre: nombreLote,
+                                  id: idLote,
+                                  finca: finca,
+                                  img: imagen)),
                         ).then((value) => setState(() {}));
                       },
                       title: Text(snapshot.data?[index]["nombre"]),
@@ -247,9 +263,13 @@ class _BatchPageState extends State<BatchPage> {
             builder: (BuildContext context) {
               return const AddBatch();
             },
-          );
+          ).then((value) => {
+            setState(() {
+              
+            })
+          });
           //Refresh
-          setState(() {});
+          
         },
         child: const Icon(
           Icons.add,

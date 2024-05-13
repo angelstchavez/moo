@@ -10,7 +10,7 @@ Future<List<Map<String, dynamic>>> getVacasByLote(String lote) async {
   CollectionReference collectionReferenceLotes = db.collection("animales");
   
   // Realizar la consulta filtrando por el campo 'user'
-  QuerySnapshot queryVacas = await collectionReferenceLotes.where('lote', isEqualTo: lote).get();
+  QuerySnapshot queryVacas = await collectionReferenceLotes.where('lote', isEqualTo: lote).where('state',isEqualTo: true).get();
   
   for (DocumentSnapshot documento in queryVacas.docs) {
     final Map<String, dynamic> data = documento.data() as Map<String, dynamic>;
@@ -26,6 +26,7 @@ Future<List<Map<String, dynamic>>> getVacasByLote(String lote) async {
       'finca': data['finca'],
       'lote':data['lote'],
       'img':data['img'],
+      'state':data['state'],
     };
     vacas.add(vaca);
   }
@@ -97,7 +98,8 @@ Future<void> addAnimal(String nombre, String raza, DateTime fecha,String lote,St
       'user': currentUser.uid,
       'finca': finca,
       'lote':lote,
-      'img': image
+      'img': image,
+      'state':true
   });
 }
 
@@ -115,5 +117,7 @@ Future<void> updateBatch(String uid, String newNombre, int newCantidad) async {
 
 Future<void> deleteAnimal(String uid) async {
   
-  await db.collection('animales').doc(uid).delete();
+  await db.collection('animales').doc(uid).update({
+    'state':false
+  });
 }

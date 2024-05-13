@@ -87,11 +87,12 @@ class _AddBatchState extends State<AddBatch> {
       actions: [
         ElevatedButton(
           onPressed: () async {
-            int cantidad = int.tryParse(_cantidadController.text) ?? 0;
+            
             List<Map<String, dynamic>> fincas = await getFincas();
             String fincaID = fincas[0]['uid'];
 
             await addBatch(_nombreController.text,fincaID,imageUrl).then((_) {
+              
               Navigator.pop(context); // Cierra el diálogo
             });
           },
