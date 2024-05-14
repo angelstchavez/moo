@@ -52,6 +52,8 @@ dependencies:
   provider: ^6.1.2
   time_picker_spinner_pop_up: ^1.0.3
   anim_search_bar: ^2.0.3
+  searchbar_animation: ^0.0.4
+  animation_search_bar: ^0.0.10
   
  
   

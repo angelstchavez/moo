@@ -1,6 +1,10 @@
+import 'package:anim_search_bar/anim_search_bar.dart';
+import 'package:animation_search_bar/animation_search_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:get/get_utils/get_utils.dart';
 import 'package:moo/features/user_auth/presentation/pages/animals/addAnimal.dart';
 import 'package:moo/features/user_auth/presentation/pages/animals/contentAnimal.dart';
 
@@ -28,12 +32,23 @@ class ContentBatch extends StatefulWidget {
 
 class _ContentBatchState extends State<ContentBatch> {
   final currentUser = FirebaseAuth.instance.currentUser!;
+   
+
+  final TextEditingController textController = TextEditingController();
+  List<Map<String, dynamic>> allAnimals = [];
+  List<Map<String, dynamic>> filteredAnimals = [];
+
   int dataLength = 0;
 
-  @override
-  void initState() {
-    super.initState();
-    loadData(); // Método para cargar los datos al abrir la página
+   
+
+  List<Map<String, dynamic>> filterAnimals(
+      List<Map<String, dynamic>> animals, String searchText) {
+    return animals.where((animal) {
+      final animalName = animal['nombre'].toString().toLowerCase();
+      final searchLower = searchText.toLowerCase();
+      return animalName.contains(searchLower);
+    }).toList();
   }
 
   // Método para cargar los datos
@@ -47,22 +62,91 @@ class _ContentBatchState extends State<ContentBatch> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    loadData(); // Método para cargar los datos al abrir la página
+    textController.addListener(() {
+      setState(() {
+        filteredAnimals = filterAnimals(allAnimals, textController.text);
+      });
+    });
+  }
+  
+  double? h;
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(Icons.arrow_back_ios_new),
-        ),
-        //actions: [IconButton(onPressed: (){}, icon: const Icon(Icons.arrow_back_ios_new))],
-        title: Text(widget.nombre),
-      ),
+      appBar:PreferredSize(
+        
+            preferredSize: const Size(double.infinity, 65),
+            child: SafeArea(
+              
+                child: Container(
+                  
+              decoration: const BoxDecoration(color: Color.fromRGBO(46, 125, 50, 1), boxShadow: [
+                BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 5,
+                    spreadRadius: 0,
+                    offset: Offset(0, 5))
+              ]),
+              alignment: Alignment.center,
+              child: AnimationSearchBar(
+                
+
+                  backIconColor: Colors.white,
+                  centerTitle: widget.nombre.toString().capitalizeFirst,
+                  centerTitleStyle: const TextStyle(color: Colors.white,fontSize: 25),
+                  onChanged: (text) {
+                   setState(() {
+                     filteredAnimals = filterAnimals(allAnimals, text);
+                   });
+               },
+                  searchTextEditingController: textController,
+                  horizontalPadding: 5,
+                  searchIconColor: Colors.white,
+                  
+                  )
+            )
+            )
+            ), 
+      // AppBar(
+      //   leading: Row(
+      //     children: [
+      //       IconButton(
+      //         onPressed: () {
+      //           Navigator.pop(context);
+      //         },
+      //         icon: const Icon(Icons.arrow_back_ios_new),
+      //       ),
+      //       AnimationSearchBar(
+      //           backIconColor: Colors.black,
+      //           isBackButtonVisible: false,
+      //           centerTitle: widget.nombre,
+      //           onChanged: (text) {
+      //             setState(() {
+      //               filteredAnimals = filterAnimals(allAnimals, text);
+      //             });
+      //           },
+      //           hintText: 'Buscar...',
+      //           searchTextEditingController: textController,
+      //           horizontalPadding: 5,
+      //           searchIconColor: Colors.black,
+                
+      //         ),
+      //     ],
+      //   ),
+      //   //actions: [IconButton(onPressed: (){}, icon: const Icon(Icons.arrow_back_ios_new))],
+        
+       
+      // ),
       body: Column(
         children: [
-          Container(
-            color: Colors.brown.shade600,
+
+          SizedBox(
+
+            height: h,
+            
             width: MediaQuery.of(context).size.width,
             child: Column(
               // Aquí puedes personalizar tu Card según tus necesidades
@@ -81,8 +165,8 @@ class _ContentBatchState extends State<ContentBatch> {
                                   fit: BoxFit.cover)
                               : Image.network('https://acortar.link/m8RozS',
                                   fit: BoxFit.cover),
-                        ),const 
-                        SizedBox(
+                        ),
+                        const SizedBox(
                             height: 8), // Espacio entre la imagen y el texto
                         Text(
                           dataLength != null
@@ -94,10 +178,13 @@ class _ContentBatchState extends State<ContentBatch> {
                       ],
                     ),
                   ),
-                )
+                ),
+                
               ],
             ),
           ),
+          
+           
           Expanded(
             child: FutureBuilder(
               future: getVacasByLote(widget.id),
@@ -144,8 +231,23 @@ class _ContentBatchState extends State<ContentBatch> {
                   );
                 } else {
                   dataLength = (snapshot.data as List).length;
+                  allAnimals = snapshot.data as List<Map<String, dynamic>>;
+                  filteredAnimals =
+                      filterAnimals(allAnimals, textController.text);
+
+                  filteredAnimals.sort((a, b) {
+                    int compareByProduccion =
+                        (b['produccion'] ?? 0).compareTo(a['produccion'] ?? 0);
+                    if (compareByProduccion != 0 || compareByProduccion != null) {
+                      // Si la comparación por cantidad no es igual, devuelve el resultado de la comparación por cantidad
+                      return compareByProduccion;
+                    } else {
+                      // Si la comparación por cantidad es igual, compara por nombre
+                      return a['nombre'].compareTo(b['nombre']);
+                    }
+                  });
                   return ListView.builder(
-                    itemCount: snapshot.data?.length,
+                    itemCount: filteredAnimals.length,
                     itemBuilder: (BuildContext context, int index) {
                       // Aquí retornamos una Card antes de un ListTile
                       return Column(
@@ -163,7 +265,7 @@ class _ContentBatchState extends State<ContentBatch> {
                               ),
                               direction: DismissDirection.endToStart,
                               onDismissed: (direction) async {
-                                await deleteAnimal(snapshot.data?[index]["uid"])
+                                await deleteAnimal(filteredAnimals[index]["uid"])
                                     .then((value) {
                                   updateBatchLenght(widget.id, dataLength - 1);
                                   setState(() {
@@ -210,36 +312,37 @@ class _ContentBatchState extends State<ContentBatch> {
 
                                 return result;
                               },
-                              key: Key(snapshot.data?[index]["uid"]),
+                              key: Key(filteredAnimals[index]["uid"]),
                               child: ListTile(
                                 leading: CircleAvatar(
                                     radius: 27,
-                                    backgroundImage: snapshot.data?[index]
+                                    backgroundImage: filteredAnimals[index]
                                                 ['img'] ==
                                             null
                                         ? const NetworkImage(
                                             'https://acortar.link/hrux2P')
                                         : NetworkImage(
-                                            '${snapshot.data?[index]['img']}')),
+                                            '${filteredAnimals[index]['img']}')),
                                 onTap: () async {
-                                   String nombreAnimal = snapshot.data?[index]["nombre"];
-                                  String? imgAnimal = snapshot.data?[index]["img"];
-                  
-                  String idAnimal = snapshot.data?[index]["uid"];
+                                  String nombreAnimal =
+                                      filteredAnimals[index]["nombre"];
+                                  String? imgAnimal =
+                                      filteredAnimals[index]["img"];
 
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) =>  ContentAnimal(
-                      nombre: nombreAnimal,
-                      id: idAnimal,
-                      img: imgAnimal
-                    
-                    )
-                    ),
-                  ); 
+                                  String idAnimal =
+                                      filteredAnimals[index]["uid"];
+
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => ContentAnimal(
+                                            nombre: nombreAnimal,
+                                            id: idAnimal,
+                                            img: imgAnimal)),
+                                  );
                                 },
-                                title: Text(snapshot.data?[index]["nombre"]),
-                                subtitle: Text(snapshot.data?[index]["raza"]),
+                                title: Text(filteredAnimals[index]["nombre"]),
+                                subtitle: Text(filteredAnimals[index]["raza"]),
                                 trailing: PopupMenuButton<String>(
                                   onSelected: (String value) async {
                                     if (value == 'Editar') {
@@ -318,7 +421,6 @@ class _ContentBatchState extends State<ContentBatch> {
                 lote: widget.id,
                 finca: widget.finca,
                 dataLenght: dataLength,
-                
               );
             },
           ).then((value) {

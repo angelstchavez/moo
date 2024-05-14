@@ -30,7 +30,7 @@ Future<List<Map<String, dynamic>>> getLotesByUser() async {
   }
 
   // Simular un pequeño retraso antes de devolver los lotes
-  await Future.delayed(const Duration(milliseconds: 5));
+ // await Future.delayed(const Duration(milliseconds: 5));
   return lotes;
 }
 

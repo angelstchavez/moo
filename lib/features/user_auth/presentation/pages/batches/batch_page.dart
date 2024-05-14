@@ -1,6 +1,6 @@
 import 'package:anim_search_bar/anim_search_bar.dart';
+import 'package:animation_search_bar/animation_search_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:moo/features/user_auth/presentation/pages/batches/addBatch.dart';
 import 'package:moo/features/user_auth/presentation/pages/batches/contentBatch.dart';
@@ -19,35 +19,65 @@ class BatchPage extends StatefulWidget {
 class _BatchPageState extends State<BatchPage> {
   final currentUser = FirebaseAuth.instance.currentUser!;
   final TextEditingController textController = TextEditingController();
+  List<Map<String, dynamic>> allBatches = [];
+  List<Map<String, dynamic>> filteredBatches = [];
+
+  @override
+  void initState() {
+    super.initState();
+    textController.addListener(() {
+      setState(() {
+        filteredBatches = filterBatches(allBatches, textController.text);
+      });
+    });
+  }
+
+  List<Map<String, dynamic>> filterBatches(
+      List<Map<String, dynamic>> batches, String searchText) {
+    return batches.where((batch) {
+      final batchName = batch['nombre'].toString().toLowerCase();
+      final searchLower = searchText.toLowerCase();
+      return batchName.contains(searchLower);
+    }).toList();
+  }
+
+  Future<String> finca() async {
+    List<Map<String, dynamic>> fincas = await getFincas();
+    String fincaID = fincas[0]['nombre'];
+    return 'Finca ${fincaID}';
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        //title: Text(currentUser.displayName!),
-        flexibleSpace: AnimSearchBar(
-          textFieldColor: Colors.green.shade50,
-          onSubmitted: (_) => true,
-            width: MediaQuery.of(context).size.width,
-            textController: textController,
-            onSuffixTap: (){
-              setState(() {
-                textController.clear();
-              });
-            },
-            helpText: 'Buscar...',
-            autoFocus: true,
-            closeSearchOnSuffixTap: true,
-            animationDurationInMilli: 50,
-            boxShadow: true,
-            color: Colors.green.shade500,
-            searchIconColor: Colors.white,
-           suffixIcon: const  Icon(Icons.close,color: Colors.white,),
+        flexibleSpace: FutureBuilder<String>(
+          future: finca(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else {
+              return AnimationSearchBar(
+                backIconColor: Colors.black,
+                isBackButtonVisible: false,
+                centerTitle: snapshot.data ?? 'Finca',
+                onChanged: (text) {
+                  setState(() {
+                    filteredBatches = filterBatches(allBatches, text);
+                  });
+                },
+                hintText: 'Buscar...',
+                searchTextEditingController: textController,
+                horizontalPadding: 5,
+                searchIconColor: Colors.black,
+                
+              );
+            }
+          },
+        ),
       ),
-      ),
-      
-      body:  FutureBuilder(
+      body: FutureBuilder(
         future: getLotesByUser(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -75,7 +105,6 @@ class _BatchPageState extends State<BatchPage> {
                           return const AddBatch();
                         },
                       );
-                      //Refresh
                       setState(() {});
                     },
                     icon: const Icon(Icons.add),
@@ -90,10 +119,21 @@ class _BatchPageState extends State<BatchPage> {
               ),
             );
           } else {
+            allBatches = snapshot.data as List<Map<String, dynamic>>;
+            filteredBatches = filterBatches(allBatches, textController.text);
+
+            filteredBatches.sort((a, b) {
+              int compareByCantidad =
+                  (b['cantidad'] ?? 0).compareTo(a['cantidad'] ?? 0);
+              if (compareByCantidad != 0) {
+                return compareByCantidad;
+              } else {
+                return a['nombre'].compareTo(b['nombre']);
+              }
+            });
             return ListView.builder(
-              itemCount: snapshot.data?.length,
+              itemCount: filteredBatches.length,
               itemBuilder: (BuildContext context, int index) {
-                // Aquí retornamos un ListTile en lugar de un Text
                 return Card(
                   child: Dismissible(
                     background: Container(
@@ -106,14 +146,13 @@ class _BatchPageState extends State<BatchPage> {
                     ),
                     direction: DismissDirection.endToStart,
                     onDismissed: (direction) async {
-                      await deleteBatch(snapshot.data?[index]["uid"]);
-                      //snapshot.data?.removeAt(index);
+                      await deleteBatch(filteredBatches[index]["uid"]);
                     },
                     confirmDismiss: (direction) async {
                       bool result = false;
 
-                      if (snapshot.data?[index]['cantidad'] == null ||
-                          snapshot.data?[index]['cantidad'] == 0) {
+                      if (filteredBatches[index]['cantidad'] == null ||
+                          filteredBatches[index]['cantidad'] == 0) {
                         result = await showDialog(
                             context: context,
                             builder: (context) {
@@ -121,7 +160,7 @@ class _BatchPageState extends State<BatchPage> {
                                 title: const Icon(Icons.warning_amber_rounded),
                                 iconColor: Colors.yellow,
                                 content: Text(
-                                    '¿Está seguro de eliminar a ${snapshot.data?[index]["nombre"]}'),
+                                    '¿Está seguro de eliminar a ${filteredBatches[index]["nombre"]}?'),
                                 actions: [
                                   TextButton(
                                       onPressed: () {
@@ -149,7 +188,7 @@ class _BatchPageState extends State<BatchPage> {
                                 iconColor: Colors.yellow,
                                 iconPadding: const EdgeInsets.all(50),
                                 content: Text(
-                                    'No puedes eliminar el "${snapshot.data?[index]["nombre"]}"\nPorque tiene ${snapshot.data?[index]["cantidad"].toString() ?? ''} Animales '),
+                                    'No puedes eliminar el "${filteredBatches[index]["nombre"]}"\nPorque tiene ${filteredBatches[index]["cantidad"].toString()} Animales'),
                                 actions: [
                                   TextButton(
                                       onPressed: () {
@@ -165,24 +204,23 @@ class _BatchPageState extends State<BatchPage> {
 
                       return result;
                     },
-                    key: Key(snapshot.data?[index]["uid"]),
+                    key: Key(filteredBatches[index]["uid"]),
                     child: ListTile(
                       leading: CircleAvatar(
                           radius: 27,
-                          backgroundImage: snapshot.data?[index]['img'] == null
+                          backgroundImage: filteredBatches[index]['img'] == null
                               ? const NetworkImage(
                                   'https://acortar.link/twXsOQ')
                               : NetworkImage(
-                                  '${snapshot.data?[index]['img']}')),
+                                  '${filteredBatches[index]['img']}')),
                       onTap: () async {
-                        String nombreLote = snapshot.data?[index]["nombre"];
-                        String? imagen = snapshot.data?[index]["img"];
+                        String nombreLote = filteredBatches[index]["nombre"];
+                        String? imagen = filteredBatches[index]["img"];
 
-                        String idLote = snapshot.data?[index]["uid"];
+                        String idLote = filteredBatches[index]["uid"];
                         List<Map<String, dynamic>> fincas = await getFincas();
                         String finca = fincas[0]['uid'];
                         Navigator.push(
-                          // ignore: use_build_context_synchronously
                           context,
                           MaterialPageRoute(
                               builder: (context) => ContentBatch(
@@ -192,19 +230,18 @@ class _BatchPageState extends State<BatchPage> {
                                   img: imagen)),
                         ).then((value) => setState(() {}));
                       },
-                      title: Text(snapshot.data?[index]["nombre"]),
+                      title: Text(filteredBatches[index]["nombre"]),
                       subtitle: Text(
-                          snapshot.data?[index]['cantidad'].toString() ?? ''),
+                          filteredBatches[index]['cantidad'].toString() ?? ''),
                       trailing: PopupMenuButton<String>(
                         onSelected: (String value) async {
                           if (value == 'Editar') {
-                            // Obtener los datos del lote que se está editando
-                            String nombreLote = snapshot.data?[index]["nombre"];
+                            String nombreLote =
+                                filteredBatches[index]["nombre"];
                             int cantidadLote =
-                                snapshot.data?[index]["cantidad"];
-                            String idLote = snapshot.data?[index]["uid"];
+                                filteredBatches[index]["cantidad"];
+                            String idLote = filteredBatches[index]["uid"];
 
-                            // Abrir la página de edición pasando los argumentos necesarios
                             await showDialog(
                               context: context,
                               builder: (BuildContext context) {
@@ -215,11 +252,9 @@ class _BatchPageState extends State<BatchPage> {
                                 );
                               },
                             );
-                            setState(() {
-                              // Puedes agregar lógica de actualización aquí si es necesario
-                            });
+                            setState(() {});
                           } else {
-                            await deleteBatch(snapshot.data?[index]["uid"]);
+                            await deleteBatch(filteredBatches[index]["uid"]);
                           }
                         },
                         color: const Color.fromARGB(255, 201, 143, 122),
@@ -263,13 +298,9 @@ class _BatchPageState extends State<BatchPage> {
             builder: (BuildContext context) {
               return const AddBatch();
             },
-          ).then((value) => {
-            setState(() {
-              
-            })
+          ).then((value) {
+            setState(() {});
           });
-          //Refresh
-          
         },
         child: const Icon(
           Icons.add,

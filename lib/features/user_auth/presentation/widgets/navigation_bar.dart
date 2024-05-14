@@ -25,7 +25,7 @@ class _NavBarState extends State<NavBar> {
     HomePage(),
     BatchPage(),
     AnimalPage(),
-    ProductionPage(),
+    //ProductionPage(),
     PorfilePage(),
     
   ];
@@ -85,10 +85,10 @@ class _NavBarState extends State<NavBar> {
           NavigationDestination(
               icon: Icon(Icons.assignment_rounded, color: Colors.grey.shade600),
               label: 'Animales'),
-          NavigationDestination(
-              icon:
-                  Icon(Icons.view_agenda_rounded, color: Colors.grey.shade600),
-              label: 'Producción'),
+          // NavigationDestination(
+          //     icon:
+          //         Icon(Icons.view_agenda_rounded, color: Colors.grey.shade600),
+          //     label: 'Producción'),
           NavigationDestination(
             icon: Icon(Icons.person_2, color: Colors.grey.shade600),
             label: 'Perfil',
