@@ -420,7 +420,7 @@ class _ContentBatchState extends State<ContentBatch> {
               return AddAnimal(
                 lote: widget.id,
                 finca: widget.finca,
-                dataLenght: dataLength,
+                dataLength: dataLength,
               );
             },
           ).then((value) {

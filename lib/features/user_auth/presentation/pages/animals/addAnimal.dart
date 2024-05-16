@@ -1,48 +1,38 @@
 import 'dart:io';
 
-import 'package:dropdown_search/dropdown_search.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:get/get_utils/get_utils.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:moo/global/common/toast.dart';
 import 'package:moo/services/firebase_service_Animal.dart';
 import 'package:moo/services/firebase_service_Batch.dart';
-import 'package:moo/services/firebase_service_Farm.dart';
 
-// ignore: camel_case_types
 class AddAnimal extends StatefulWidget {
   final String lote;
   final String finca;
-  final int dataLenght;
-  const AddAnimal(
-      {Key? key,
-      required this.finca,
-      required this.lote,
-      required this.dataLenght})
-      : super(key: key);
+  final int dataLength;
+
+  const AddAnimal({
+    Key? key,
+    required this.finca,
+    required this.lote,
+    required this.dataLength,
+  }) : super(key: key);
 
   @override
   State<AddAnimal> createState() => _AddAnimalState();
 }
 
-// ignore: camel_case_types
 class _AddAnimalState extends State<AddAnimal> {
-  final TextEditingController _nombreController =
-      TextEditingController(text: '');
+  final TextEditingController _nombreController = TextEditingController(text: '');
   final TextEditingController _razaController = TextEditingController(text: '');
-  final TextEditingController _fechaController =
-      TextEditingController(text: DateFormat('yyyy-MM-dd').format(DateTime.now()));
+  final TextEditingController _fechaController = TextEditingController(text: DateFormat('yyyy-MM-dd').format(DateTime.now()));
 
   String? imageUrl;
 
   @override
   void dispose() {
-    // Limpia los controladores cuando el widget se elimina del árbol
     _nombreController.dispose();
     _razaController.dispose();
     _fechaController.dispose();
@@ -52,7 +42,59 @@ class _AddAnimalState extends State<AddAnimal> {
   final _formKey = GlobalKey<FormState>();
 
   DateTime dateTime = DateTime.now();
-  
+
+  void _selectImageSource() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Cámara'),
+                onTap: () async {
+                  Navigator.pop(context);
+                  _getImage(ImageSource.camera);
+                },
+              ),
+              ListTile(
+                leading:const Icon(Icons.photo),
+                title: const Text('Galería'),
+                onTap: () async {
+                  Navigator.pop(context);
+                  _getImage(ImageSource.gallery);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _getImage(ImageSource source) async {
+    final pickedFile = await ImagePicker().pickImage(source: source);
+    if (pickedFile == null) return;
+
+    String fileName = DateTime.now().microsecondsSinceEpoch.toString();
+
+    Reference referenceRoot = FirebaseStorage.instance.ref();
+    Reference referenceDireImages = referenceRoot.child('images');
+    Reference referenceImageUpload = referenceDireImages.child(fileName);
+
+    try {
+  await referenceImageUpload.putFile(File(pickedFile.path));
+  String downloadUrl = await referenceImageUpload.getDownloadURL();
+  setState(() {
+    imageUrl = downloadUrl;
+  });
+} catch (e) {
+  // Manejo de errores
+}
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,9 +102,8 @@ class _AddAnimalState extends State<AddAnimal> {
       title: const Text('Agregar Animal'),
       content: SingleChildScrollView(
         child: Container(
-          constraints: BoxConstraints(
-              maxWidth: 400), // Establece el tamaño máximo del formulario
-          padding: EdgeInsets.all(16), // Añade relleno para mejor apariencia
+          constraints: const BoxConstraints(maxWidth: 400),
+          padding: const EdgeInsets.all(16),
           child: Form(
             key: _formKey,
             child: Column(
@@ -97,34 +138,25 @@ class _AddAnimalState extends State<AddAnimal> {
                   },
                 ),
                 TextFormField(
-                  
                   onTap: () {
-                    
-                    
                     showCupertinoModalPopup(
-                        context: context,
-                        builder: (BuildContext context) => SizedBox(
-                              height: 250,
-                              child: CupertinoDatePicker(
-                                backgroundColor: Colors.white,
-                                initialDateTime: dateTime,
-                                onDateTimeChanged: (DateTime newTime) {
-                                  setState(() => dateTime = newTime);
-                                 _fechaController.text = '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}';
-
-                                },
-
-                                use24hFormat: true,
-                                mode: CupertinoDatePickerMode.date
-                              ),
-                              
-                            )
-                            
-                            
-                            );
+                      context: context,
+                      builder: (BuildContext context) => SizedBox(
+                        height: 250,
+                        child: CupertinoDatePicker(
+                          backgroundColor: Colors.white,
+                          initialDateTime: dateTime,
+                          onDateTimeChanged: (DateTime newTime) {
+                            setState(() => dateTime = newTime);
+                            _fechaController.text = '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}';
+                          },
+                          use24hFormat: true,
+                          mode: CupertinoDatePickerMode.date,
+                        ),
+                      ),
+                    );
                   },
                   readOnly: true,
-
                   controller: _fechaController,
                   decoration: const InputDecoration(
                     labelText: 'Fecha de Nacimiento',
@@ -134,36 +166,13 @@ class _AddAnimalState extends State<AddAnimal> {
                     if (value == null || value.isEmpty) {
                       return 'Por favor, ingrese la fecha de nacimiento';
                     }
-                    // Aquí podrías agregar una validación adicional si es necesario
                     return null;
                   },
                 ),
                 IconButton(
-                    onPressed: () async {
-                      final file = await ImagePicker()
-                          .pickImage(source: ImageSource.camera);
-                      if (file == null) return;
-
-                      String fileName =
-                          DateTime.now().microsecondsSinceEpoch.toString();
-
-                      //creamos el folder en firebase storage
-                      Reference referenceRoot = FirebaseStorage.instance.ref();
-                      Reference referenceDireImages =
-                          referenceRoot.child('images');
-
-                      Reference referenceImageUpload =
-                          referenceDireImages.child(fileName);
-
-                      try {
-                        await referenceImageUpload.putFile(File(file.path));
-
-                        imageUrl = await referenceImageUpload.getDownloadURL();
-                      } catch (e) {
-                        // Manejo de errores
-                      }
-                    },
-                    icon: const Icon(Icons.add_photo_alternate))
+                  onPressed: _selectImageSource,
+                  icon: const Icon(Icons.add_photo_alternate),
+                ),
               ],
             ),
           ),
@@ -173,19 +182,21 @@ class _AddAnimalState extends State<AddAnimal> {
         ElevatedButton(
           onPressed: () async {
             if (_formKey.currentState!.validate()) {
-              // Si el formulario es válido, procesa los datos
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Processing Data')),
+                const SnackBar(content: Text('Procesando Datos')),
               );
               DateTime fechaNacimiento = DateTime.parse(_fechaController.text);
 
-              await addAnimal(_nombreController.text, _razaController.text,
-                      fechaNacimiento, widget.lote, widget.finca, imageUrl)
-                  .then((_) {
+              await addAnimal(
+                _nombreController.text,
+                _razaController.text,
+                fechaNacimiento,
+                widget.lote,
+                widget.finca,
+                imageUrl,
+              ).then((_) {
                 Navigator.pop(context);
-
-                updateBatchLenght(
-                    widget.lote, widget.dataLenght + 1); // Cierra el diálogo
+                updateBatchLenght(widget.lote, widget.dataLength + 1);
               });
             }
           },
@@ -193,7 +204,7 @@ class _AddAnimalState extends State<AddAnimal> {
         ),
         ElevatedButton(
           onPressed: () async {
-            Navigator.pop(context); // Cierra el diálogo sin guardar
+            Navigator.pop(context);
           },
           child: const Text('Cancelar'),
         ),

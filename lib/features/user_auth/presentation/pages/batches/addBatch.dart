@@ -32,6 +32,59 @@ class _AddBatchState extends State<AddBatch> {
     super.dispose();
   }
 
+  void _selectImageSource() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Cámara'),
+                onTap: () async {
+                  Navigator.pop(context);
+                  _getImage(ImageSource.camera);
+                },
+              ),
+              ListTile(
+                leading:const Icon(Icons.photo),
+                title: const Text('Galería'),
+                onTap: () async {
+                  Navigator.pop(context);
+                  _getImage(ImageSource.gallery);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _getImage(ImageSource source) async {
+    final pickedFile = await ImagePicker().pickImage(source: source);
+    if (pickedFile == null) return;
+
+    String fileName = DateTime.now().microsecondsSinceEpoch.toString();
+
+    Reference referenceRoot = FirebaseStorage.instance.ref();
+    Reference referenceDireImages = referenceRoot.child('imagesBatch');
+    Reference referenceImageUpload = referenceDireImages.child(fileName);
+
+    try {
+  await referenceImageUpload.putFile(File(pickedFile.path));
+  String downloadUrl = await referenceImageUpload.getDownloadURL();
+  setState(() {
+    imageUrl = downloadUrl;
+  });
+} catch (e) {
+  // Manejo de errores
+}
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -58,30 +111,9 @@ class _AddBatchState extends State<AddBatch> {
             keyboardType: TextInputType.number,
           ), */
           IconButton(
-                onPressed: () async {
-                  final file =
-                      await ImagePicker().pickImage(source: ImageSource.camera);
-                  if (file == null) return;
-
-                  String fileName =
-                      DateTime.now().microsecondsSinceEpoch.toString();
-
-                  //creamos el folder en firebase storage
-                  Reference referenceRoot = FirebaseStorage.instance.ref();
-                  Reference referenceDireImages = referenceRoot.child('imagesBatch');
-
-                  Reference referenceImageUpload =
-                      referenceDireImages.child(fileName);
-
-                  try {
-                    await referenceImageUpload.putFile(File(file.path));
-
-                    imageUrl = await referenceImageUpload.getDownloadURL();
-                  } catch (e) {
-                    // Manejo de errores
-                  }
-                },
-                icon: const Icon(Icons.add_photo_alternate))
+                  onPressed: _selectImageSource,
+                  icon: const Icon(Icons.add_photo_alternate),
+                ),
         ],
       ),
       actions: [
