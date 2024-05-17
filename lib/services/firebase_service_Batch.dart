@@ -45,10 +45,10 @@ Future<void> addBatch(String nombre, String finca, String? image) async {
   });
 }
 
-Future<void> updateBatch(String uid, String newNombre, int newCantidad) async {
+Future<void> updateBatch(String uid, String newNombre) async {
   await db.collection('lotes').doc(uid).update({
     'nombre': newNombre,
-    'cantidad': newCantidad,
+    
   });
 }
 

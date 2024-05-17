@@ -39,7 +39,7 @@ class _LoginPageState extends State<LoginPage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: Colors.green.shade800,
+        backgroundColor: Colors.white,
         title: const Text(
           "Moo App",
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),

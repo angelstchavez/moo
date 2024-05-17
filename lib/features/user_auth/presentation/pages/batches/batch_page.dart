@@ -270,16 +270,8 @@ class _BatchPageState extends State<BatchPage> {
                               title: Text('Editar'),
                             ),
                           ),
-                          const PopupMenuDivider(
-                            height: 1,
-                          ),
-                          const PopupMenuItem<String>(
-                            value: 'Eliminar',
-                            child: ListTile(
-                              leading: Icon(Icons.delete),
-                              title: Text('Eliminar'),
-                            ),
-                          ),
+                          
+                          
                         ],
                       ),
                     ),

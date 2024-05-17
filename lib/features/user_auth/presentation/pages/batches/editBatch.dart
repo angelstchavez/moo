@@ -20,21 +20,21 @@ class EditBatch extends StatefulWidget {
 
 class _EditBatchState extends State<EditBatch> {
   final TextEditingController _nombreController = TextEditingController();
-  final TextEditingController _cantidadController = TextEditingController();
+  
 
   @override
   void initState() {
     super.initState();
     // Cargar los datos del lote en los controladores al inicializar el estado del widget
     _nombreController.text = widget.nombre;
-    _cantidadController.text = widget.cantidad.toString();
+    
   }
 
   @override
   void dispose() {
     // Limpia los controladores cuando el widget se elimina del árbol
     _nombreController.dispose();
-    _cantidadController.dispose();
+    
     super.dispose();
   }
 
@@ -55,21 +55,14 @@ class _EditBatchState extends State<EditBatch> {
               hintText: 'Ingrese el nombre del lote',
             ),
           ),
-          TextField(
-            controller: _cantidadController,
-            decoration: const InputDecoration(
-              labelText: 'Cantidad',
-              hintText: 'Ingrese la cantidad del lote',
-            ),
-            keyboardType: TextInputType.number,
-          ),
+          
         ],
       ),
       actions: [
         ElevatedButton(
           onPressed: () async {
-            int cantidad = int.tryParse(_cantidadController.text) ?? 0;
-            await updateBatch(widget.id, _nombreController.text, cantidad)
+           
+            await updateBatch(widget.id, _nombreController.text)
                 .then((_) {
               Navigator.pop(context);
             });

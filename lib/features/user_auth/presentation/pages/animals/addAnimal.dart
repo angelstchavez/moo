@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -95,6 +96,12 @@ class _AddAnimalState extends State<AddAnimal> {
 }
 
   }
+  List<String> razas = [
+    'Gyroland F1 (Gyr + Holstein)',
+    'Simmbrah F1 (Simmental + Brahman)',
+    'Brahamoland F1 (Brahman + Holstein)',
+    // Add other breeds here
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -123,20 +130,20 @@ class _AddAnimalState extends State<AddAnimal> {
                     return null;
                   },
                 ),
-                TextFormField(
-                  controller: _razaController,
-                  decoration: const InputDecoration(
-                    labelText: 'Raza',
-                    hintText: 'Ingrese la Raza del animal',
-                  ),
-                  keyboardType: TextInputType.name,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Por favor, ingrese la raza del animal';
-                    }
-                    return null;
-                  },
+                DropdownSearch<String>(
+              
+              
+              dropdownDecoratorProps: const DropDownDecoratorProps(
+                dropdownSearchDecoration: InputDecoration(
+                  labelText: "Raza",
+                  hintText: "Selecciona una Raza",
+                  
                 ),
+              ),
+              items: razas,
+              selectedItem: _razaController.text, // Set the initial selection
+              onChanged:print
+            ),
                 TextFormField(
                   onTap: () {
                     showCupertinoModalPopup(
@@ -181,6 +188,12 @@ class _AddAnimalState extends State<AddAnimal> {
       actions: [
         ElevatedButton(
           onPressed: () async {
+            Navigator.pop(context);
+          },
+          child: const Text('Cancelar'),
+        ),
+        ElevatedButton(
+          onPressed: () async {
             if (_formKey.currentState!.validate()) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Procesando Datos')),
@@ -202,12 +215,7 @@ class _AddAnimalState extends State<AddAnimal> {
           },
           child: const Text('Guardar'),
         ),
-        ElevatedButton(
-          onPressed: () async {
-            Navigator.pop(context);
-          },
-          child: const Text('Cancelar'),
-        ),
+        
       ],
     );
   }
