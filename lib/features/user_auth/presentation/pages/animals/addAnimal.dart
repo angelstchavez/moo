@@ -26,9 +26,11 @@ class AddAnimal extends StatefulWidget {
 }
 
 class _AddAnimalState extends State<AddAnimal> {
-  final TextEditingController _nombreController = TextEditingController(text: '');
+  final TextEditingController _nombreController =
+      TextEditingController(text: '');
   final TextEditingController _razaController = TextEditingController(text: '');
-  final TextEditingController _fechaController = TextEditingController(text: DateFormat('yyyy-MM-dd').format(DateTime.now()));
+  final TextEditingController _fechaController = TextEditingController(
+      text: DateFormat('yyyy-MM-dd').format(DateTime.now()));
 
   String? imageUrl;
 
@@ -61,7 +63,7 @@ class _AddAnimalState extends State<AddAnimal> {
                 },
               ),
               ListTile(
-                leading:const Icon(Icons.photo),
+                leading: const Icon(Icons.photo),
                 title: const Text('Galería'),
                 onTap: () async {
                   Navigator.pop(context);
@@ -86,16 +88,16 @@ class _AddAnimalState extends State<AddAnimal> {
     Reference referenceImageUpload = referenceDireImages.child(fileName);
 
     try {
-  await referenceImageUpload.putFile(File(pickedFile.path));
-  String downloadUrl = await referenceImageUpload.getDownloadURL();
-  setState(() {
-    imageUrl = downloadUrl;
-  });
-} catch (e) {
-  // Manejo de errores
-}
-
+      await referenceImageUpload.putFile(File(pickedFile.path));
+      String downloadUrl = await referenceImageUpload.getDownloadURL();
+      setState(() {
+        imageUrl = downloadUrl;
+      });
+    } catch (e) {
+      // Manejo de errores
+    }
   }
+
   List<String> razas = [
     'Gyroland F1 (Gyr + Holstein)',
     'Simmbrah F1 (Simmental + Brahman)',
@@ -131,19 +133,22 @@ class _AddAnimalState extends State<AddAnimal> {
                   },
                 ),
                 DropdownSearch<String>(
-              
-              
-              dropdownDecoratorProps: const DropDownDecoratorProps(
-                dropdownSearchDecoration: InputDecoration(
-                  labelText: "Raza",
-                  hintText: "Selecciona una Raza",
-                  
+                  dropdownDecoratorProps: const DropDownDecoratorProps(
+                    dropdownSearchDecoration: InputDecoration(
+                      labelText: "Raza",
+                      hintText: "Selecciona una Raza",
+                    ),
+                  ),
+                  items: razas,
+                  selectedItem:
+                      _razaController.text, // Set the initial selection
+                  onChanged: (String? selectedRaza) {
+                    setState(() {
+                      _razaController.text =
+                          selectedRaza ?? ''; // Update the controller value
+                    });
+                  },
                 ),
-              ),
-              items: razas,
-              selectedItem: _razaController.text, // Set the initial selection
-              onChanged:print
-            ),
                 TextFormField(
                   onTap: () {
                     showCupertinoModalPopup(
@@ -155,7 +160,8 @@ class _AddAnimalState extends State<AddAnimal> {
                           initialDateTime: dateTime,
                           onDateTimeChanged: (DateTime newTime) {
                             setState(() => dateTime = newTime);
-                            _fechaController.text = '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}';
+                            _fechaController.text =
+                                '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}';
                           },
                           use24hFormat: true,
                           mode: CupertinoDatePickerMode.date,
@@ -215,7 +221,6 @@ class _AddAnimalState extends State<AddAnimal> {
           },
           child: const Text('Guardar'),
         ),
-        
       ],
     );
   }

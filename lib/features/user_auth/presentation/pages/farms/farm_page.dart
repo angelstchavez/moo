@@ -115,16 +115,16 @@ class _FarmPageState extends State<FarmPage> {
                             String idLote = snapshot.data?[index]["uid"];
 
                             // Abrir la página de edición pasando los argumentos necesarios
-                            await showDialog(
+                            /* await showDialog(
                               context: context,
                               builder: (BuildContext context) {
                                 return EditBatch(
                                   nombre: nombreLote,
-                                  cantidad: cantidadLote,
+                                 
                                   id: idLote,
                                 );
                               },
-                            );
+                            ); */
                             setState(() {
                               // Puedes agregar lógica de actualización aquí si es necesario
                             });

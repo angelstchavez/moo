@@ -27,6 +27,7 @@ Future<List<Map<String, dynamic>>> getVacasByLote(String lote) async {
       'lote':data['lote'],
       'img':data['img'],
       'state':data['state'],
+      'parto':data['parto'],
     };
     vacas.add(vaca);
   }
@@ -44,7 +45,7 @@ Future<List<Map<String, dynamic>>> getAllVacas() async {
   CollectionReference collectionReferenceLotes = db.collection("animales");
   
   // Realizar la consulta filtrando por el campo 'user'
-  QuerySnapshot queryVacas = await collectionReferenceLotes.where('user', isEqualTo: currentUser.uid).get();
+  QuerySnapshot queryVacas = await collectionReferenceLotes.where('user', isEqualTo: currentUser.uid).where('state', isEqualTo: true).get();
   
   for (DocumentSnapshot documento in queryVacas.docs) {
     final Map<String, dynamic> data = documento.data() as Map<String, dynamic>;
@@ -60,6 +61,8 @@ Future<List<Map<String, dynamic>>> getAllVacas() async {
       'finca': data['finca'],
       'lote':data['lote'],
       'img':data['img'],
+      'state':data['state'],
+      'parto':data['parto'],
     };
     vacas.add(vaca);
   }
@@ -82,6 +85,7 @@ Future<Map<String, dynamic>?> getLotesById(String uid) async {
       'cantidad': data['cantidad'],
       'uid': snapshot.id,
       'finca': data['finca'],
+      
     };
   
 }
@@ -99,7 +103,8 @@ Future<void> addAnimal(String nombre, String raza, DateTime fecha,String lote,St
       'finca': finca,
       'lote':lote,
       'img': image,
-      'state':true
+      'state':true,
+      'parto':false
   });
 }
 
@@ -108,16 +113,20 @@ Future<void> addAnimal(String nombre, String raza, DateTime fecha,String lote,St
 
 
 
-Future<void> updateBatch(String uid, String newNombre, int newCantidad) async {
-  await db.collection('lotes').doc(uid).update({
+Future<void> updateAnimal(String uid, String newNombre, ) async {
+  await db.collection('animales').doc(uid).update({
     'nombre': newNombre,
-    'cantidad': newCantidad,
+    
   });
 }
 
+Future<void> updateAnimalParto(String uid, bool parto) async {
+  await db.collection('animales').doc(uid).update({
+    'parto': parto,
+    
+  });
+}
 Future<void> deleteAnimal(String uid) async {
   
-  await db.collection('animales').doc(uid).update({
-    'state':false
-  });
+  await db.collection('animales').doc(uid).delete();
 }

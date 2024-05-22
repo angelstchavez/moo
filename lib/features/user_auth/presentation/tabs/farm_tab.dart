@@ -14,18 +14,19 @@ class _FarmTabState extends State<FarmTab> {
     final currentUser = FirebaseAuth.instance.currentUser!;
     
   List<Map<String, dynamic>> fincas = []; // Lista para almacenar todas las fincas
-  @override
-  void initState() {
-    super.initState();
-    obtenerFincas(); // Llamar a la función para obtener las fincas al inicializar el widget
-  }
-
   obtenerFincas() async {
     List<Map<String, dynamic>> fetchedFincas = await getFincas();
     setState(() {
       fincas = fetchedFincas; // Actualizar el estado del widget con las fincas obtenidas
     });
   }
+  @override
+  void initState() {
+    super.initState();
+    obtenerFincas(); // Llamar a la función para obtener las fincas al inicializar el widget
+  }
+
+  
 
   @override
   Widget build(BuildContext context) {

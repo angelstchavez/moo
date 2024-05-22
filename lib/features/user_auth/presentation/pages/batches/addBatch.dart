@@ -93,6 +93,10 @@ class _AddBatchState extends State<AddBatch> {
         mainAxisSize: MainAxisSize.min,
         verticalDirection: VerticalDirection.down,
         children: [
+          SizedBox(
+            height: imageUrl!=null?200:0,
+            child: imageUrl!=null?Image.network('$imageUrl'):null,
+          ),
           TextFormField(
             enableSuggestions: true,
             controller: _nombreController,

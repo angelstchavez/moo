@@ -7,9 +7,11 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get_utils/get_utils.dart';
 import 'package:moo/features/user_auth/presentation/pages/animals/addAnimal.dart';
 import 'package:moo/features/user_auth/presentation/pages/animals/contentAnimal.dart';
+import 'package:moo/features/user_auth/presentation/pages/animals/editAnimal.dart';
 
 import 'package:moo/features/user_auth/presentation/pages/batches/addBatch.dart';
 import 'package:moo/features/user_auth/presentation/pages/batches/batch_page.dart';
+import 'package:moo/global/common/toast.dart';
 import 'package:moo/services/firebase_service_Animal.dart';
 import 'package:moo/services/firebase_service_Batch.dart';
 
@@ -32,15 +34,12 @@ class ContentBatch extends StatefulWidget {
 
 class _ContentBatchState extends State<ContentBatch> {
   final currentUser = FirebaseAuth.instance.currentUser!;
-   
 
   final TextEditingController textController = TextEditingController();
   List<Map<String, dynamic>> allAnimals = [];
   List<Map<String, dynamic>> filteredAnimals = [];
 
   int dataLength = 0;
-
-   
 
   List<Map<String, dynamic>> filterAnimals(
       List<Map<String, dynamic>> animals, String searchText) {
@@ -71,45 +70,39 @@ class _ContentBatchState extends State<ContentBatch> {
       });
     });
   }
-  
+
   double? h;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:PreferredSize(
-        
-            preferredSize: const Size(double.infinity, 65),
-            child: SafeArea(
-              
-                child: Container(
-                  
-              decoration: const BoxDecoration(color: Color.fromRGBO(46, 125, 50, 1), boxShadow: [
-                BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 5,
-                    spreadRadius: 0,
-                    offset: Offset(0, 5))
-              ]),
-              alignment: Alignment.center,
-              child: AnimationSearchBar(
-                
-
-                  backIconColor: Colors.white,
-                  centerTitle: widget.nombre.toString().capitalizeFirst,
-                  centerTitleStyle: const TextStyle(color: Colors.white,fontSize: 25),
-                  onChanged: (text) {
-                   setState(() {
-                     filteredAnimals = filterAnimals(allAnimals, text);
-                   });
-               },
-                  searchTextEditingController: textController,
-                  horizontalPadding: 5,
-                  searchIconColor: Colors.white,
-                  
-                  )
-            )
-            )
-            ), 
+      appBar: PreferredSize(
+          preferredSize: const Size(double.infinity, 65),
+          child: SafeArea(
+              child: Container(
+                  decoration: const BoxDecoration(
+                      color: Color.fromRGBO(46, 125, 50, 1),
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 5,
+                            spreadRadius: 0,
+                            offset: Offset(0, 5))
+                      ]),
+                  alignment: Alignment.center,
+                  child: AnimationSearchBar(
+                    backIconColor: Colors.white,
+                    centerTitle: widget.nombre.toString().capitalizeFirst,
+                    centerTitleStyle:
+                        const TextStyle(color: Colors.white, fontSize: 25),
+                    onChanged: (text) {
+                      setState(() {
+                        filteredAnimals = filterAnimals(allAnimals, text);
+                      });
+                    },
+                    searchTextEditingController: textController,
+                    horizontalPadding: 5,
+                    searchIconColor: Colors.white,
+                  )))),
       // AppBar(
       //   leading: Row(
       //     children: [
@@ -132,21 +125,17 @@ class _ContentBatchState extends State<ContentBatch> {
       //           searchTextEditingController: textController,
       //           horizontalPadding: 5,
       //           searchIconColor: Colors.black,
-                
+
       //         ),
       //     ],
       //   ),
       //   //actions: [IconButton(onPressed: (){}, icon: const Icon(Icons.arrow_back_ios_new))],
-        
-       
+
       // ),
       body: Column(
         children: [
-
           SizedBox(
-
             height: h,
-            
             width: MediaQuery.of(context).size.width,
             child: Column(
               // Aquí puedes personalizar tu Card según tus necesidades
@@ -179,12 +168,9 @@ class _ContentBatchState extends State<ContentBatch> {
                     ),
                   ),
                 ),
-                
               ],
             ),
           ),
-          
-           
           Expanded(
             child: FutureBuilder(
               future: getVacasByLote(widget.id),
@@ -238,7 +224,8 @@ class _ContentBatchState extends State<ContentBatch> {
                   filteredAnimals.sort((a, b) {
                     int compareByProduccion =
                         (b['produccion'] ?? 0).compareTo(a['produccion'] ?? 0);
-                    if (compareByProduccion != 0 || compareByProduccion != null) {
+                    if (compareByProduccion != 0 ||
+                        compareByProduccion != null) {
                       // Si la comparación por cantidad no es igual, devuelve el resultado de la comparación por cantidad
                       return compareByProduccion;
                     } else {
@@ -249,6 +236,7 @@ class _ContentBatchState extends State<ContentBatch> {
                   return ListView.builder(
                     itemCount: filteredAnimals.length,
                     itemBuilder: (BuildContext context, int index) {
+                      final animal = filteredAnimals[index];
                       // Aquí retornamos una Card antes de un ListTile
                       return Column(
                         children: [
@@ -256,60 +244,100 @@ class _ContentBatchState extends State<ContentBatch> {
                             // Personaliza tu Card según sea necesario
                             child: Dismissible(
                               background: Container(
-                                color: Colors.red,
-                                alignment: AlignmentDirectional.centerEnd,
-                                child: IconButton(
-                                  onPressed: () {},
-                                  icon: const Icon(Icons.delete),
+                                color: Colors.blue,
+                                alignment: AlignmentDirectional.centerStart,
+                                padding: const EdgeInsets.only(left: 15),
+                                child: const Icon(
+                                  Icons.edit_square,
+                                  color: Colors.white,
+                                  size: 25,
                                 ),
                               ),
-                              direction: DismissDirection.endToStart,
+                              secondaryBackground: Container(
+                                color: Colors.red,
+                                alignment: AlignmentDirectional.centerEnd,
+                                padding: const EdgeInsets.only(right: 15),
+                                child: const Icon(
+                                  Icons.delete_forever,
+                                  color: Colors.white,
+                                  size: 30,
+                                ),
+                              ),
+                              direction: DismissDirection.horizontal,
                               onDismissed: (direction) async {
-                                await deleteAnimal(filteredAnimals[index]["uid"])
-                                    .then((value) {
-                                  updateBatchLenght(widget.id, dataLength - 1);
-                                  setState(() {
-                                    loadData();
-                                  });
-                                });
-
-                                //snapshot.data?.removeAt(index);
+                                if (direction == DismissDirection.startToEnd) {
+                                  // Manejo de la edición
+                                }
                               },
                               confirmDismiss: (direction) async {
                                 bool result = false;
+                                String nombreAnimal = animal['nombre'];
+                                bool partoAnimal = animal['parto'];
+                                String? imgAnimal = animal['img'];
+                                String idAnimal = animal['uid'].toString();
 
-                                result = await showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      title: const Icon(
-                                          Icons.warning_amber_rounded),
-                                      iconColor: Colors.yellow,
-                                      content: Text(
-                                        '¿Está seguro de eliminar al animal "${snapshot.data?[index]["nombre"]}"',
-                                      ),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () {
-                                            return Navigator.pop(
-                                                context, false);
-                                          },
-                                          child: const Text(
-                                            'Cancelar',
-                                            style: TextStyle(color: Colors.red),
-                                          ),
+                                if (direction == DismissDirection.startToEnd) {
+                                  result = false;
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => EditAnimal(
+                                            nombre: nombreAnimal,
+                                            id: idAnimal,
+                                            img: imgAnimal,parto: partoAnimal,)),
+                                  ).then((value) => setState(() {}));
+                                } else {
+                                  result = await showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        title: const Icon(
+                                          Icons.question_mark_rounded,
+                                          size: 50,
+                                          color: Colors.blue,
                                         ),
-                                        TextButton(
-                                          onPressed: () {
-                                            return Navigator.pop(context, true);
-                                          },
-                                          child: const Text('Aceptar'),
-                                        )
-                                      ],
-                                    );
-                                  },
-                                );
-
+                                        iconColor: Colors.red,
+                                        content: Text(
+                                          '¿Está seguro de eliminar a $nombreAnimal?',
+                                          style: const TextStyle(fontSize: 20),
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context, false);
+                                            },
+                                            child: const Text(
+                                              'Cancelar',
+                                              style: TextStyle(
+                                                  color: Colors.red,
+                                                  fontSize: 20),
+                                            ),
+                                          ),
+                                          TextButton(
+                                            onPressed: () async {
+                                              await deleteAnimal(idAnimal).then(
+                                                (value) {
+                                                  setState(() {});
+                                                },
+                                              );
+                                              showToast(
+                                                  message:
+                                                      'Animal eliminado exitosamente');
+                                              Navigator.pop(context, true);
+                                            },
+                                            child: const Text(
+                                              'Aceptar',
+                                              style: TextStyle(
+                                                  color: Colors.green,
+                                                  fontSize: 20),
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                }
+                                setState(() {});
                                 return result;
                               },
                               key: Key(filteredAnimals[index]["uid"]),
@@ -331,73 +359,75 @@ class _ContentBatchState extends State<ContentBatch> {
 
                                   String idAnimal =
                                       filteredAnimals[index]["uid"];
+                                  bool parto=filteredAnimals[index]["parto"];
 
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => ContentAnimal(
-                                            nombre: nombreAnimal,
-                                            id: idAnimal,
-                                            img: imgAnimal)),
-                                  );
+                                  if (parto) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => ContentAnimal(
+                                              nombre: nombreAnimal,
+                                              id: idAnimal,
+                                              img: imgAnimal)),
+                                    );
+                                  } else {
+                                    await showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return AlertDialog(
+                                          title: const Icon(
+                                            Icons.info,
+                                            size: 50,
+                                            color: Colors.amber,
+                                          ),
+                                          iconColor: Colors.yellow,
+                                          content: Text(
+                                            'No puedes agregarle produccion a la vaca $nombreAnimal porque no tiene un parto, ve a a editar y agrega un parto',
+                                            style:
+                                                const TextStyle(fontSize: 20),
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () {
+                                                
+
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          EditAnimal(
+                                                              nombre:
+                                                                  nombreAnimal,
+                                                              id: idAnimal,
+                                                              img: imgAnimal,parto: parto,)),
+                                                ).then(
+                                                    (value) => setState(() {Navigator.pop(context);}));
+                                              },
+                                              child: const Text(
+                                                'OK',
+                                                style: TextStyle(
+                                                    color: Colors.blue,
+                                                    fontSize: 20),
+                                              ),
+                                            ),
+                                            TextButton(onPressed: (){
+                                              Navigator.pop(context);
+
+
+                                            }, child:const Text(
+                                                'Cancelar',
+                                                style: TextStyle(
+                                                    color: Colors.red,
+                                                    fontSize: 20),
+                                              ), )
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  }
                                 },
                                 title: Text(filteredAnimals[index]["nombre"]),
                                 subtitle: Text(filteredAnimals[index]["raza"]),
-                                trailing: PopupMenuButton<String>(
-                                  onSelected: (String value) async {
-                                    if (value == 'Editar') {
-                                      // Obtener los datos del lote que se está editando
-                                      String nombreLote =
-                                          snapshot.data?[index]["nombre"];
-                                      int cantidadLote =
-                                          snapshot.data?[index]["cantidad"];
-                                      String idLote =
-                                          snapshot.data?[index]["uid"];
-
-                                      // Abrir la página de edición pasando los argumentos necesarios
-                                      /*await showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return EditBatch(
-                            nombre: nombreLote,
-                            cantidad: cantidadLote,
-                            id: idLote,
-                          );
-                        },
-                      );*/
-                                      setState(() {
-                                        // Puedes agregar lógica de actualización aquí si es necesario
-                                      });
-                                    } else {
-                                      //await deleteBatch(snapshot.data?[index]["uid"]);
-                                    }
-                                  },
-                                  color:
-                                      const Color.fromARGB(255, 201, 143, 122),
-                                  elevation: 5,
-                                  iconSize: 20,
-                                  shadowColor: Colors.black,
-                                  itemBuilder: (BuildContext context) =>
-                                      <PopupMenuEntry<String>>[
-                                    const PopupMenuItem<String>(
-                                      value: 'Editar',
-                                      child: ListTile(
-                                        leading: Icon(Icons.edit),
-                                        title: Text('Editar'),
-                                      ),
-                                    ),
-                                    const PopupMenuDivider(
-                                      height: 1,
-                                    ),
-                                    const PopupMenuItem<String>(
-                                      value: 'Eliminar',
-                                      child: ListTile(
-                                        leading: Icon(Icons.delete),
-                                        title: Text('Eliminar'),
-                                      ),
-                                    ),
-                                  ],
-                                ),
                               ),
                             ),
                           ),

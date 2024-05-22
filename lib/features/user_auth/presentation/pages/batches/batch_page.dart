@@ -47,6 +47,8 @@ class _BatchPageState extends State<BatchPage> {
     return 'Finca ${fincaID}';
   }
 
+  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -131,148 +133,186 @@ class _BatchPageState extends State<BatchPage> {
                 return a['nombre'].compareTo(b['nombre']);
               }
             });
+
+           
             return ListView.builder(
               itemCount: filteredBatches.length,
               itemBuilder: (BuildContext context, int index) {
-                return Card(
-                  child: Dismissible(
-                    background: Container(
-                      color: Colors.red,
-                      alignment: AlignmentDirectional.centerEnd,
-                      child: IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.delete),
-                      ),
-                    ),
-                    direction: DismissDirection.endToStart,
-                    onDismissed: (direction) async {
-                      await deleteBatch(filteredBatches[index]["uid"]);
-                    },
-                    confirmDismiss: (direction) async {
-                      bool result = false;
 
-                      if (filteredBatches[index]['cantidad'] == null ||
-                          filteredBatches[index]['cantidad'] == 0) {
-                        result = await showDialog(
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                title: const Icon(Icons.warning_amber_rounded),
-                                iconColor: Colors.yellow,
-                                content: Text(
-                                    '¿Está seguro de eliminar a ${filteredBatches[index]["nombre"]}?'),
-                                actions: [
-                                  TextButton(
-                                      onPressed: () {
-                                        return Navigator.pop(context, false);
-                                      },
-                                      child: const Text('Cancelar',
-                                          style: TextStyle(color: Colors.red))),
-                                  TextButton(
-                                      onPressed: () {
-                                        showToast(
-                                            message:
-                                                'Lote eliminado exitosamente');
-                                        return Navigator.pop(context, true);
-                                      },
-                                      child: const Text('Aceptar'))
-                                ],
-                              );
-                            });
-                      } else {
-                        result = await showDialog(
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                title: const Icon(Icons.info),
-                                iconColor: Colors.yellow,
-                                iconPadding: const EdgeInsets.all(50),
-                                content: Text(
-                                    'No puedes eliminar el "${filteredBatches[index]["nombre"]}"\nPorque tiene ${filteredBatches[index]["cantidad"].toString()} Animales'),
-                                actions: [
-                                  TextButton(
-                                      onPressed: () {
-                                        return Navigator.pop(context, false);
-                                      },
-                                      child: const Text('OK',
-                                          style:
-                                              TextStyle(color: Colors.blue))),
-                                ],
-                              );
-                            });
-                      }
-
-                      return result;
-                    },
-                    key: Key(filteredBatches[index]["uid"]),
-                    child: ListTile(
-                      leading: CircleAvatar(
-                          radius: 27,
-                          backgroundImage: filteredBatches[index]['img'] == null
-                              ? const NetworkImage(
-                                  'https://acortar.link/twXsOQ')
-                              : NetworkImage(
-                                  '${filteredBatches[index]['img']}')),
-                      onTap: () async {
-                        String nombreLote = filteredBatches[index]["nombre"];
-                        String? imagen = filteredBatches[index]["img"];
-
-                        String idLote = filteredBatches[index]["uid"];
-                        List<Map<String, dynamic>> fincas = await getFincas();
-                        String finca = fincas[0]['uid'];
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ContentBatch(
-                                  nombre: nombreLote,
-                                  id: idLote,
-                                  finca: finca,
-                                  img: imagen)),
-                        ).then((value) => setState(() {}));
-                      },
-                      title: Text(filteredBatches[index]["nombre"]),
-                      subtitle: Text(
-                          filteredBatches[index]['cantidad'].toString() ?? ''),
-                      trailing: PopupMenuButton<String>(
-                        onSelected: (String value) async {
-                          if (value == 'Editar') {
-                            String nombreLote =
-                                filteredBatches[index]["nombre"];
-                            int cantidadLote =
-                                filteredBatches[index]["cantidad"];
-                            String idLote = filteredBatches[index]["uid"];
-
-                            await showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return EditBatch(
-                                  nombre: nombreLote,
-                                  cantidad: cantidadLote,
-                                  id: idLote,
-                                );
-                              },
-                            );
-                            setState(() {});
-                          } else {
-                            await deleteBatch(filteredBatches[index]["uid"]);
-                          }
-                        },
-                        color: const Color.fromARGB(255, 201, 143, 122),
-                        elevation: 5,
-                        iconSize: 20,
-                        shadowColor: Colors.black,
-                        itemBuilder: (BuildContext context) =>
-                            <PopupMenuEntry<String>>[
-                          const PopupMenuItem<String>(
-                            value: 'Editar',
-                            child: ListTile(
-                              leading: Icon(Icons.edit),
-                              title: Text('Editar'),
+                 final batch=filteredBatches[index];
+                return SizedBox(
+                  height: 100,
+                  child: Card(
+                    
+                    child: Dismissible(
+                       background: Container(
+                            color: Colors.blue,
+                            alignment: AlignmentDirectional.centerStart,
+                            padding: const EdgeInsets.only(left: 15),
+                            child: const Icon(
+                              Icons.edit_square,
+                              color: Colors.white,
+                              size: 25,
                             ),
                           ),
+                          secondaryBackground: Container(
+                            color: Colors.red,
+                            alignment: AlignmentDirectional.centerEnd,
+                            padding: const EdgeInsets.only(right: 15),
+                            child: const Icon(
+                              Icons.delete_forever,
+                              color: Colors.white,
+                              size: 30,
+                            ),
+                          ),
+                          direction: DismissDirection.horizontal,
+                          onDismissed: (direction) async {
+                            if (direction == DismissDirection.startToEnd) {
+                              // Manejo de la edición
+                            }
+                          },
+                      
+                      confirmDismiss: (direction) async {
+                            bool result = false;
+                            String nombreLote = batch['nombre'];
+                            String? imgLote = batch['img'];
+                            String idLote = batch['uid'].toString();
+                            int cantidad = batch['cantidad'];
+
+                            if (direction == DismissDirection.startToEnd) {
+                              result = false;
+                               Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => EditBatch(
+                                    nombre: nombreLote,
+                                    id: idLote,
+                                    img: imgLote)),
+                          ).then((value) => setState(() {}));
+                              
+                            } else {
+                              if (batch['cantidad'] == 0) {
+                                result = await showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      title: const Icon(
+                                        Icons.question_mark_rounded,
+                                        size: 50,
+                                        color: Colors.blue,
+                                      ),
+                                      iconColor: Colors.red,
+                                      content: Text(
+                                        '¿Está seguro de eliminar a $nombreLote?',
+                                        style: const TextStyle(fontSize: 20),
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context, false);
+                                          },
+                                          child: const Text(
+                                            'Cancelar',
+                                            style: TextStyle(
+                                                color: Colors.red,
+                                                fontSize: 20),
+                                          ),
+                                        ),
+                                        TextButton(
+                                          onPressed: () async{
+                                            await deleteBatch(idLote).then((value) {
+                                              setState(() {
+                                                
+                                              });
+
+                                            },);
+                                            showToast(message: 'Lote eliminado exitosamente');
+                                            Navigator.pop(context, true);
+                                          },
+                                          child: const Text(
+                                            'Aceptar',
+                                            style: TextStyle(
+                                                color: Colors.green,
+                                                fontSize: 20),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              } else {
+                                result = await showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      title: const Icon(
+                                        Icons.info,
+                                        size: 50,
+                                        color: Colors.amber,
+                                      ),
+                                      iconColor: Colors.yellow,
+                                      content: Text(
+                                        'No puedes eliminar el "$nombreLote"\nPorque tiene $cantidad Animales',
+                                        style: const TextStyle(fontSize: 20),
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context, false);
+                                          },
+                                          child: const Text(
+                                            'OK',
+                                            style: TextStyle(
+                                                color: Colors.blue,
+                                                fontSize: 20),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              }
+                            }
+                            setState(() {
+                                
+                              });
+                            return result;
+                            
+                          },
+                      key: Key(filteredBatches[index]["uid"]),
+                      child: ListTile(
+                        
+                        leading: CircleAvatar(
                           
-                          
-                        ],
+                            radius: 40,
+                            backgroundImage: filteredBatches[index]['img'] == null
+                                ? const NetworkImage(
+                                    'https://acortar.link/twXsOQ')
+                                : NetworkImage(
+                                    '${filteredBatches[index]['img']}')),
+                                    hoverColor: Colors.green.shade50,
+                                    
+                        onTap: () async {
+                          String nombreLote = filteredBatches[index]["nombre"];
+                          String? imagen = filteredBatches[index]["img"];
+                  
+                          String idLote = filteredBatches[index]["uid"];
+                          List<Map<String, dynamic>> fincas = await getFincas();
+                          String finca = fincas[0]['uid'];
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ContentBatch(
+                                    nombre: nombreLote,
+                                    id: idLote,
+                                    finca: finca,
+                                    img: imagen)),
+                          ).then((value) => setState(() {}));
+                        },
+                        title: Text(filteredBatches[index]["nombre"]),
+                        subtitle: Text(
+                            filteredBatches[index]['cantidad'].toString() ?? ''),
+                       
                       ),
                     ),
                   ),

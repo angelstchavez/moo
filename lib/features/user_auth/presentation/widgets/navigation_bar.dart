@@ -27,7 +27,6 @@ class _NavBarState extends State<NavBar> {
     AnimalPage(),
     //ProductionPage(),
     PorfilePage(),
-    
   ];
   void _logout() async {
     try {
@@ -71,19 +70,47 @@ class _NavBarState extends State<NavBar> {
         child: body.elementAt(currentIndex),
       ),
       bottomNavigationBar: NavigationBar(
+        
+        
         indicatorColor: Colors.grey.shade300,
         destinations: [
           NavigationDestination(
+            
               icon: Icon(
-                Icons.home,
+                Icons.home_outlined,
                 color: Colors.grey.shade600,
+                size: 30,
               ),
-              label: 'Inicio'),
+              selectedIcon: const Icon(
+                Icons.home,
+                size: 30,
+              ),
+              label: 'Inicio',
+              
+              
+              ),
           NavigationDestination(
-              icon: Icon(Icons.agriculture, color: Colors.grey.shade600),
+              icon: Icon(
+                Icons.agriculture_outlined,
+                color: Colors.grey.shade600,
+                size: 30,
+              ),
+              selectedIcon: const Icon(
+                Icons.agriculture,
+                size: 30,
+              ),
               label: 'Finca'),
+
           NavigationDestination(
-              icon: Icon(Icons.assignment_rounded, color: Colors.grey.shade600),
+              icon: Icon(
+                Icons.assignment_outlined, 
+                color: Colors.grey.shade600,
+                size: 30,
+                ),
+                selectedIcon: const Icon(
+                Icons.assignment,
+                size: 30,
+              ),
               label: 'Animales'),
           // NavigationDestination(
           //     icon:
