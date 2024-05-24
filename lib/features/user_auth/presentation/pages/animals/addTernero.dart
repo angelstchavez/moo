@@ -11,17 +11,17 @@ import 'package:moo/services/firebase_service_Batch.dart';
 import 'package:moo/services/firebase_service_Farm.dart';
 
 // ignore: camel_case_types
-class AddAnimalBar extends StatefulWidget {
-  const AddAnimalBar({
+class AddTernero extends StatefulWidget {
+  const AddTernero({
     Key? key,
   }) : super(key: key);
 
   @override
-  State<AddAnimalBar> createState() => _AddAnimalBarState();
+  State<AddTernero> createState() => _AddTerneroState();
 }
 
 // ignore: camel_case_types
-class _AddAnimalBarState extends State<AddAnimalBar> {
+class _AddTerneroState extends State<AddTernero> {
   final TextEditingController _nombreController =
       TextEditingController(text: '');
   final TextEditingController _razaController = TextEditingController(text: '');
@@ -29,7 +29,7 @@ class _AddAnimalBarState extends State<AddAnimalBar> {
       TextEditingController(text: '');
 
   String? imageUrl;
-   void _selectImageSource() {
+  void _selectImageSource() {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -46,7 +46,7 @@ class _AddAnimalBarState extends State<AddAnimalBar> {
                 },
               ),
               ListTile(
-                leading:const Icon(Icons.photo),
+                leading: const Icon(Icons.photo),
                 title: const Text('Galería'),
                 onTap: () async {
                   Navigator.pop(context);
@@ -71,15 +71,14 @@ class _AddAnimalBarState extends State<AddAnimalBar> {
     Reference referenceImageUpload = referenceDireImages.child(fileName);
 
     try {
-  await referenceImageUpload.putFile(File(pickedFile.path));
-  String downloadUrl = await referenceImageUpload.getDownloadURL();
-  setState(() {
-    imageUrl = downloadUrl;
-  });
-} catch (e) {
-  // Manejo de errores
-}
-
+      await referenceImageUpload.putFile(File(pickedFile.path));
+      String downloadUrl = await referenceImageUpload.getDownloadURL();
+      setState(() {
+        imageUrl = downloadUrl;
+      });
+    } catch (e) {
+      // Manejo de errores
+    }
   }
 
   // Declarar la lista de lotes
@@ -114,14 +113,13 @@ class _AddAnimalBarState extends State<AddAnimalBar> {
     'Brahamoland F1 (Brahman + Holstein)',
     // Add other breeds here
   ];
-    DateTime dateTime = DateTime.now();
+  DateTime dateTime = DateTime.now();
   //String _selectedRaza = '';
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('Agregar Animal'),
-      content: Column(
+    return Scaffold(
+      body: Column(
           mainAxisSize: MainAxisSize.min,
           verticalDirection: VerticalDirection.down,
           children: [
@@ -135,51 +133,48 @@ class _AddAnimalBarState extends State<AddAnimalBar> {
               ),
             ),
             DropdownSearch<String>(
-              
-              
-              dropdownDecoratorProps: const DropDownDecoratorProps(
-                dropdownSearchDecoration: InputDecoration(
-                  labelText: "Raza",
-                  hintText: "Selecciona una Raza",
-                  
-                ),
-              ),
-              items: razas,
-              selectedItem: _razaController.text, // Set the initial selection
-              onChanged:print
-            ),
-            TextFormField(
-                  onTap: () {
-                    showCupertinoModalPopup(
-                      context: context,
-                      builder: (BuildContext context) => SizedBox(
-                        height: 250,
-                        child: CupertinoDatePicker(
-                          backgroundColor: Colors.white,
-                          initialDateTime: dateTime,
-                          onDateTimeChanged: (DateTime newTime) {
-                            setState(() => dateTime = newTime);
-                            _fechaController.text = '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}';
-                          },
-                          use24hFormat: true,
-                          mode: CupertinoDatePickerMode.date,
-                        ),
-                      ),
-                    );
-                  },
-                  readOnly: true,
-                  controller: _fechaController,
-                  decoration: const InputDecoration(
-                    labelText: 'Fecha de Nacimiento',
+                dropdownDecoratorProps: const DropDownDecoratorProps(
+                  dropdownSearchDecoration: InputDecoration(
+                    labelText: "Raza",
+                    hintText: "Selecciona una Raza",
                   ),
-                  keyboardType: TextInputType.datetime,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Por favor, ingrese la fecha de nacimiento';
-                    }
-                    return null;
-                  },
                 ),
+                items: razas,
+                selectedItem: _razaController.text, // Set the initial selection
+                onChanged: print),
+            TextFormField(
+              onTap: () {
+                showCupertinoModalPopup(
+                  context: context,
+                  builder: (BuildContext context) => SizedBox(
+                    height: 250,
+                    child: CupertinoDatePicker(
+                      backgroundColor: Colors.white,
+                      initialDateTime: dateTime,
+                      onDateTimeChanged: (DateTime newTime) {
+                        setState(() => dateTime = newTime);
+                        _fechaController.text =
+                            '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}';
+                      },
+                      use24hFormat: true,
+                      mode: CupertinoDatePickerMode.date,
+                    ),
+                  ),
+                );
+              },
+              readOnly: true,
+              controller: _fechaController,
+              decoration: const InputDecoration(
+                labelText: 'Fecha de Nacimiento',
+              ),
+              keyboardType: TextInputType.datetime,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Por favor, ingrese la fecha de nacimiento';
+                }
+                return null;
+              },
+            ),
             DropdownButton<String>(
               hint: const Text('Seleccione un lote'),
               // Mostrar los nombres de los lotes en el menú desplegable
@@ -198,32 +193,40 @@ class _AddAnimalBarState extends State<AddAnimalBar> {
               },
             ),
             IconButton(
-                  onPressed: _selectImageSource,
-                  icon: const Icon(Icons.add_photo_alternate),
+              onPressed: _selectImageSource,
+              icon: const Icon(Icons.add_photo_alternate),
+            ),
+            Row(
+              children: [
+                ElevatedButton(
+                  onPressed: () async {
+                    Navigator.pop(context); // Cierra el diálogo sin guardar
+                  },
+                  child: const Text('Cancelar'),
                 ),
+                ElevatedButton(
+                  onPressed: () async {
+                    DateTime fechaNacimiento =
+                        DateTime.parse(_fechaController.text);
+                    List<Map<String, dynamic>> fincas = await getFincas();
+                    String fincaID = fincas[0]['uid'];
+                    await addAnimal(
+                            _nombreController.text,
+                            _razaController.text,
+                            fechaNacimiento,
+                            selectedLoteUid!,
+                            fincaID,
+                            imageUrl,
+                            true)
+                        .then((_) {
+                      Navigator.pop(context); // Cierra el diálogo
+                    });
+                  },
+                  child: const Text('Guardar'),
+                ),
+              ],
+            )
           ]),
-      actions: [
-        ElevatedButton(
-          onPressed: () async {
-            Navigator.pop(context); // Cierra el diálogo sin guardar
-          },
-          child: const Text('Cancelar'),
-        ),
-        ElevatedButton(
-          onPressed: () async {
-            DateTime fechaNacimiento = DateTime.parse(_fechaController.text);
-            List<Map<String, dynamic>> fincas = await getFincas();
-            String fincaID = fincas[0]['uid'];
-            await addAnimal(_nombreController.text, _razaController.text,
-                    fechaNacimiento, selectedLoteUid!, fincaID, imageUrl,true)
-                .then((_) {
-              Navigator.pop(context); // Cierra el diálogo
-            });
-          },
-          child: const Text('Guardar'),
-        ),
-        
-      ],
     );
   }
 }

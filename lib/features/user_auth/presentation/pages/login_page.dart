@@ -92,6 +92,7 @@ class _LoginPageState extends State<LoginPage> {
                 FormContainerWidget(
                   hintText: "Correo electrónico",
                   controller: _emailController,
+                  inputType: TextInputType.emailAddress,
                 ),
                 const SizedBox(
                   height: 10,

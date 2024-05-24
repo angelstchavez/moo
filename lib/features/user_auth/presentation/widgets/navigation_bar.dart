@@ -46,12 +46,21 @@ class _NavBarState extends State<NavBar> {
     );
   }
 
+  void _trabajador() {
+    Navigator.pop(context);
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const PorfilePage()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: DrawerWidget(
         onProfileTap: _profile,
         onSignUp: _logout,
+        onTrabajadorTap: _trabajador,
       ),
       appBar: AppBar(
           backgroundColor: Colors.green.shade800,

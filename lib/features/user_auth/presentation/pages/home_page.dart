@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:moo/features/user_auth/presentation/tabs/animal_tab.dart';
 import 'package:moo/features/user_auth/presentation/tabs/batch_tab.dart';
 import 'package:moo/features/user_auth/presentation/tabs/farm_tab.dart';
-import 'package:moo/features/user_auth/presentation/tabs/production_tab.dart';
+import 'package:moo/features/user_auth/presentation/tabs/trabajadores_tab.dart';
 import 'package:moo/features/user_auth/presentation/widgets/tab_widget.dart';
 
 class HomePage extends StatefulWidget {

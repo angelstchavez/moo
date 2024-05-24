@@ -4,12 +4,14 @@ import 'package:moo/features/user_auth/presentation/widgets/list_title_widget.da
 class DrawerWidget extends StatelessWidget {
   final void Function()? onHomeTap;
   final void Function()? onProfileTap;
+  final void Function()? onTrabajadorTap;
   final void Function()? onSignUp;
 
   const DrawerWidget({
     Key? key,
     this.onHomeTap,
     this.onProfileTap,
+    this.onTrabajadorTap,
     this.onSignUp,
   }) : super(key: key);
 
@@ -38,6 +40,11 @@ class DrawerWidget extends StatelessWidget {
                 icon: Icons.person,
                 text: "Perfil",
                 onTap: onProfileTap,
+              ),
+              ListTitleWidget(
+                icon: Icons.groups_2_sharp,
+                text: "Trabajadores",
+                onTap: onTrabajadorTap,
               ),
             ],
           ),

@@ -272,9 +272,11 @@ class _ContentBatchState extends State<ContentBatch> {
                               confirmDismiss: (direction) async {
                                 bool result = false;
                                 String nombreAnimal = animal['nombre'];
-                                bool partoAnimal = animal['parto'];
+                                bool partoAnimal = animal['esMadre'];
                                 String? imgAnimal = animal['img'];
                                 String idAnimal = animal['uid'].toString();
+                                String fechaAnimal = animal['fecha'];
+                                String finca = animal['finca'];
 
                                 if (direction == DismissDirection.startToEnd) {
                                   result = false;
@@ -282,9 +284,13 @@ class _ContentBatchState extends State<ContentBatch> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => EditAnimal(
-                                            nombre: nombreAnimal,
-                                            id: idAnimal,
-                                            img: imgAnimal,parto: partoAnimal,)),
+                                              fechaN: fechaAnimal,
+                                              nombre: nombreAnimal,
+                                              id: idAnimal,
+                                              img: imgAnimal,
+                                              parto: partoAnimal,
+                                              finca: finca,
+                                            )),
                                   ).then((value) => setState(() {}));
                                 } else {
                                   result = await showDialog(
@@ -359,17 +365,25 @@ class _ContentBatchState extends State<ContentBatch> {
 
                                   String idAnimal =
                                       filteredAnimals[index]["uid"];
-                                  bool parto=filteredAnimals[index]["parto"];
+                                  String fechaAnimal =
+                                      filteredAnimals[index]["fecha"];
+                                  bool parto = filteredAnimals[index]["parto"];
+                                  int? edadTernero =
+                                      filteredAnimals[index]["edadTernero"];
+                                      String finca =filteredAnimals[index]['finca'];
 
                                   if (parto) {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => ContentAnimal(
-                                              nombre: nombreAnimal,
-                                              id: idAnimal,
-                                              img: imgAnimal)),
-                                    );
+                                    if (edadTernero! < 1) {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => ContentAnimal(
+                                                nombre: nombreAnimal,
+                                                id: idAnimal,
+                                                img: imgAnimal)),
+                                      );
+                                    }
+                                    
                                   } else {
                                     await showDialog(
                                       context: context,
@@ -389,19 +403,22 @@ class _ContentBatchState extends State<ContentBatch> {
                                           actions: [
                                             TextButton(
                                               onPressed: () {
-                                                
-
                                                 Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
                                                       builder: (context) =>
                                                           EditAnimal(
-                                                              nombre:
-                                                                  nombreAnimal,
-                                                              id: idAnimal,
-                                                              img: imgAnimal,parto: parto,)),
-                                                ).then(
-                                                    (value) => setState(() {Navigator.pop(context);}));
+                                                            fechaN: fechaAnimal,
+                                                            nombre:
+                                                                nombreAnimal,
+                                                            id: idAnimal,
+                                                            img: imgAnimal,
+                                                            parto: parto,
+                                                            finca:finca ,
+                                                          )),
+                                                ).then((value) => setState(() {
+                                                      Navigator.pop(context);
+                                                    }));
                                               },
                                               child: const Text(
                                                 'OK',
@@ -410,16 +427,17 @@ class _ContentBatchState extends State<ContentBatch> {
                                                     fontSize: 20),
                                               ),
                                             ),
-                                            TextButton(onPressed: (){
-                                              Navigator.pop(context);
-
-
-                                            }, child:const Text(
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                              child: const Text(
                                                 'Cancelar',
                                                 style: TextStyle(
                                                     color: Colors.red,
                                                     fontSize: 20),
-                                              ), )
+                                              ),
+                                            )
                                           ],
                                         );
                                       },

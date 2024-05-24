@@ -1,68 +1,46 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:intl/intl.dart';
 
 
 FirebaseFirestore db = FirebaseFirestore.instance;
 final  currentUser = FirebaseAuth.instance.currentUser!;
-Future<List<Map<String, dynamic>>> getVacasByLote(String lote) async {
-  List<Map<String, dynamic>> animales = [];
+Future<List<Map<String, dynamic>>> getTernerosByVaca(String vaca) async {
+  List<Map<String, dynamic>> terneros = [];
   // Obtener referencia a la colección de lotes
-  CollectionReference collectionReferenceAnimales = db.collection("animales");
-
-  // Realizar la consulta filtrando por el campo 'lote' y 'state'
-  QuerySnapshot queryVacas = await collectionReferenceAnimales
-      .where('lote', isEqualTo: lote)
-      .where('state', isEqualTo: true)
-      .get();
-
-  DateTime now = DateTime.now();
-
+  CollectionReference collectionReferenceTerneros = db.collection("terneros");
+  
+  // Realizar la consulta filtrando por el campo 'user'
+  QuerySnapshot queryVacas = await collectionReferenceTerneros.where('madre', isEqualTo: vaca).where('state',isEqualTo: true).get();
+  
   for (DocumentSnapshot documento in queryVacas.docs) {
     final Map<String, dynamic> data = documento.data() as Map<String, dynamic>;
-    DateTime fechaNacimiento = DateFormat('yyyy-M-d').parse(data['fecha']);
-    int edad = now.difference(fechaNacimiento).inDays ~/ 365;
-
-    int? edadTernero;
-     if(data['fechaParto'] != null){
-      DateTime fechaParto = DateFormat('yyyy-M-d').parse(data['fechaParto']);
-     edadTernero = now.difference(fechaParto).inDays ~/ 365;
-     }
     
-    
-
-    if (edad >= 3 ) {
-      final animal = {
-        'uid': documento.id,
-        'nombre': data['nombre'],
-        'raza': data['raza'],
-        'sexo': data['sexo'],
-        'fecha': data['fecha'],
-        'produccion': data['produccion'],
-        'user': data['user'],
-        'finca': data['finca'],
-        'lote': data['lote'],
-        'img': data['img'],
-        'state': data['state'],
-        'parto': data['parto'],
-        'esMadre': data['esMadre'],
-        'idMadre':data['idMadre'],
-        //'fechaParto': data['fechaParto'],
-        'edadTernero': edadTernero,
-        
-        'edad': edad,
-      };
-      animales.add(animal);
-    }
+    final ternero = {
+      'uid': documento.id,
+      'nombre': data['nombre'],
+      'raza': data['raza'],
+      'fecha':data['fecha'],
+      'produccion': data['produccion'],
+      //"Referencias"
+      'user': data['user'],
+      'finca': data['finca'],
+      'lote':data['lote'],
+      'img':data['img'],
+      'state':data['state'],
+      'parto':data['parto'],
+    };
+    terneros.add(ternero);
   }
-
+  
   // Simular un pequeño retraso antes de devolver los lotes
+  
   await Future.delayed(const Duration(milliseconds: 5));
-
-  return animales;
+  
+  return terneros;
 }
 
 Future<List<Map<String, dynamic>>> getAllVacas() async {
+
   List<Map<String, dynamic>> vacas = [];
   // Obtener referencia a la colección de lotes
   CollectionReference collectionReferenceLotes = db.collection("animales");
@@ -113,7 +91,7 @@ Future<Map<String, dynamic>?> getLotesById(String uid) async {
   
 }
 
-Future<void> addAnimal(String nombre, String raza, DateTime fecha,String lote,String finca,String? image,bool adulto) async {
+Future<void> addTernero(String nombre, String raza, DateTime fecha,String lote,String finca,String? image, String madre,String sexo) async {
  
  String formattedDate = "${fecha.year}-${fecha.month}-${fecha.day}";
   await db.collection('animales').add({
@@ -127,36 +105,14 @@ Future<void> addAnimal(String nombre, String raza, DateTime fecha,String lote,St
       'lote':lote,
       'img': image,
       'state':true,
-      'esAdulto':adulto,
-      'esMadre':false,
-      'Sexo':'Hembra',
-      'parto':false
-  });
-}
-
-
-
-Future<void> addTernero(String nombre, String raza,String finca,String? image,String idMadre) async {
-
-  DateTime fecha =DateTime.now();
- 
- String formattedDate = "${fecha.year}-${fecha.month}-${fecha.day}";
-  await db.collection('animales').add({
-    'nombre': nombre,
-      'raza': raza,
-      'fecha':formattedDate,
-      'produccion': null,
-      //"Referencias"
-      'user': currentUser.uid,
-      'finca': finca,
-      'lote':null,
-      'img': image,
-      'state':true,
-      'esAdulto':false,
       'parto':false,
-      'idMadre':idMadre
+      'sexo':sexo,
+      'madre':madre
   });
 }
+
+
+
 
 
 
@@ -167,16 +123,9 @@ Future<void> updateAnimal(String uid, String newNombre, ) async {
   });
 }
 
-Future<void> updateAnimalParto(String uid, bool parto,bool esMadre) async {
+Future<void> updateAnimalParto(String uid, bool parto) async {
   await db.collection('animales').doc(uid).update({
     'parto': parto,
-    'esMadre':esMadre
-    
-  });
-}
-Future<void> updateAnimalAdulto(String uid, String rangoEdad) async {
-  await db.collection('animales').doc(uid).update({
-    'esAdulto': rangoEdad ,
     
   });
 }
