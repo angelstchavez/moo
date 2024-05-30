@@ -240,45 +240,45 @@ class _EditAnimalState extends State<EditAnimal> {
                 ),
               ),
               const Gap(16),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Row(
-                  children: [
-                    const Text(
-                      ' Parto',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 16,
-                      ),
-                    ),
-                    const Spacer(), // Espaciado flexible para empujar el switch hacia la derecha
-                    Switch(
-                      activeColor: Colors.white,
-                      activeTrackColor: Colors.green,
-                      inactiveThumbColor: Colors.white,
-                      inactiveTrackColor: Colors.grey,
-                      value: parto,
-                      onChanged: (value) async {
-                        setState(() {
-                          parto = value; // Actualiza el valor de parto
-                          updateAnimalParto(widget.id, parto,false);
-                          Fluttertoast.showToast(
+              // Align(
+              //   alignment: Alignment.centerLeft,
+              //   child: Row(
+              //     children: [
+                    // const Text(
+                    //   ' Parto',
+                    //   style: TextStyle(
+                    //     color: Colors.black,
+                    //     fontSize: 16,
+                    //   ),
+                    // ),
+                    // const Spacer(), // Espaciado flexible para empujar el switch hacia la derecha
+                    // Switch(
+                    //   activeColor: Colors.white,
+                    //   activeTrackColor: Colors.green,
+                    //   inactiveThumbColor: Colors.white,
+                    //   inactiveTrackColor: Colors.grey,
+                    //   value: parto,
+                    //   onChanged: (value) async {
+                    //     setState(() {
+                    //       parto = value; // Actualiza el valor de parto
+                    //       updateAnimalParto(widget.id, parto,false,);
+                    //       Fluttertoast.showToast(
                                           
-                                          msg: 'Parto Exitoso...',
-                                          backgroundColor: Colors.green,
-                                          webPosition: 'left',
-                                          fontSize: 20,
+                    //                       msg: 'Parto Exitoso...',
+                    //                       backgroundColor: Colors.green,
+                    //                       webPosition: 'left',
+                    //                       fontSize: 20,
                                            
 
                                         
-                                        );
-                        });
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              const Gap(16),
+                    //                     );
+                    //     });
+                    //   },
+                    // ),
+              //     ],
+              //   ),
+              // ),
+              // const Gap(16),
               parto == false
                   ? ExpansionTile(
                       title: const Text('Agregar Parto'),
@@ -385,13 +385,14 @@ class _EditAnimalState extends State<EditAnimal> {
                                              
                                           });
                                         });
-                                        await updateAnimalParto(widget.id, true,true).then((_){
+                                        await updateAnimalParto(widget.id, true,true,).then((_){
                                           setState(() {
                                             parto=true;
                                           });
                                         });
 
                                         Fluttertoast.showToast(
+                                          backgroundColor: Colors.green,
                                           
                                           msg: 'Parto Exitoso...',
 

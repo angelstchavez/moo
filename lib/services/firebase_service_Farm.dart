@@ -4,7 +4,36 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
 final  currentUser = FirebaseAuth.instance.currentUser!;
-Future<List<Map<String, dynamic>>> getFincas() async {
+Future<List<Map<String, dynamic>>> getFincas(idJefe) async {
+  List<Map<String, dynamic>> fincas = [];
+  CollectionReference collectionReferenceFincas = db.collection("fincas");
+  QuerySnapshot queryFincas = await collectionReferenceFincas.where('usuario', isEqualTo: idJefe).get();
+
+  
+
+  for (DocumentSnapshot documento in queryFincas.docs) {
+    final Map<String, dynamic> data = documento.data() as Map<String, dynamic>;
+    
+    // Obtener la referencia a la finca
+    //DocumentReference fincaRef = data['finca'];
+    // Obtener los datos de la finca utilizando la referencia
+    //DocumentSnapshot fincaSnapshot = await fincaRef.get();
+    //final Map<String, dynamic> fincaData = fincaSnapshot.data() as Map<String, dynamic>;
+
+    final finca = {
+      'nombre': data['nombre'],
+      'fecha': data['fecha'],
+      'uid': documento.id,
+      'usuario': data['usuario'],
+      'tamano': data['tamano'],
+      
+    };
+    fincas.add(finca);
+  }
+  await Future.delayed(const Duration(milliseconds: 5));
+  return fincas;
+}
+Future<List<Map<String, dynamic>>> getFincass() async {
   List<Map<String, dynamic>> fincas = [];
   CollectionReference collectionReferenceFincas = db.collection("fincas");
   QuerySnapshot queryFincas = await collectionReferenceFincas.where('usuario', isEqualTo: currentUser.uid).get();

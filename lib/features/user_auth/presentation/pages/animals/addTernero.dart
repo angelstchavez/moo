@@ -87,7 +87,7 @@ class _AddTerneroState extends State<AddTernero> {
 
 // Función para cargar los lotes
   void cargarLotes() async {
-    lotes = await getLotesByUser();
+    lotes = await getLotesByUser('');
     // Llamar setState para actualizar la interfaz
     setState(() {});
   }
@@ -208,7 +208,7 @@ class _AddTerneroState extends State<AddTernero> {
                   onPressed: () async {
                     DateTime fechaNacimiento =
                         DateTime.parse(_fechaController.text);
-                    List<Map<String, dynamic>> fincas = await getFincas();
+                    List<Map<String, dynamic>> fincas = await getFincass();
                     String fincaID = fincas[0]['uid'];
                     await addAnimal(
                             _nombreController.text,

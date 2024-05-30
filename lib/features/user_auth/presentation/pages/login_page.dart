@@ -3,14 +3,19 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:gap/gap.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:moo/features/user_auth/firebase_auth_implementation/firebase_auth_services.dart';
+import 'package:moo/features/user_auth/presentation/pages/home_page.dart';
 import 'package:moo/features/user_auth/presentation/pages/reset_password_page.dart';
 import 'package:moo/features/user_auth/presentation/pages/sign_up_page.dart';
 import 'package:moo/features/user_auth/presentation/widgets/form_container_widget.dart';
+import 'package:moo/features/user_auth/presentation/widgets/navigation_bar.dart';
 import 'package:moo/features/user_auth/presentation/widgets/square_title_widget.dart';
 import 'package:moo/global/common/toast.dart';
 import 'package:moo/services/firebase_service_Farm.dart';
+import 'package:moo/services/firebase_user.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -23,6 +28,7 @@ class _LoginPageState extends State<LoginPage> {
   bool _isSigning = false;
   final FirebaseAuthServices _auth = FirebaseAuthServices();
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -37,14 +43,6 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.white,
-        title: const Text(
-          "Moo App",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-      ),
       body: SingleChildScrollView(
         child: Center(
           child: Padding(
@@ -54,6 +52,7 @@ class _LoginPageState extends State<LoginPage> {
               children: [
                 Column(
                   children: [
+                    const Gap(100),
                     Container(
                       decoration: BoxDecoration(
                         boxShadow: [
@@ -114,7 +113,8 @@ class _LoginPageState extends State<LoginPage> {
                           Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const ResetPasswordPage()),
+                                builder: (context) =>
+                                    const ResetPasswordPage()),
                             (route) => false,
                           );
                         },
@@ -133,9 +133,7 @@ class _LoginPageState extends State<LoginPage> {
                   height: 15,
                 ),
                 GestureDetector(
-                  onTap: () {
-                    _signIn();
-                  },
+                  onTap: _signIn,
                   child: Container(
                     width: double.infinity,
                     height: 50,
@@ -241,6 +239,8 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  bool? state;
+
   void _signIn() async {
     setState(() {
       _isSigning = true;
@@ -249,18 +249,40 @@ class _LoginPageState extends State<LoginPage> {
     String email = _emailController.text;
     String password = _passwordController.text;
 
-    User? user = await _auth.signInWithEmailAndPassword(email, password);
+    try {
+      User? user = await _auth.signInWithEmailAndPassword(email, password);
 
-    setState(() {
-      _isSigning = false;
-    });
+      if (user != null) {
+        final currentUser = FirebaseAuth.instance.currentUser!;
+        // Verificar el estado del usuario en Firestore
+        List<Map<String, dynamic>> usuarios = await getUserById(currentUser.uid);
+        if (usuarios.isNotEmpty) {
+          if (!mounted) return; // Verifica si el widget está montado
+          setState(() {
+            state = usuarios.first['state'];
+          });
+        }
 
-    if (user != null) {
-      showToast(message: "Inicio de sesión exitoso");
-    
-      Navigator.pushNamed(context, "/home");
-    } else {
-      showToast(message: "Ha ocurrido un error");
+        if (state == true) {
+          showToast(message: "Inicio de sesión exitoso");
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (builder) => const NavBar()),
+            (route) => false,
+          );
+        } else {
+          showToast(message: "Usuario inactivo. Contacta al administrador.");
+          await _firebaseAuth.signOut(); // Cerrar sesión del usuario inactivo
+        }
+      } else {
+        showToast(message: "Ha ocurrido un error");
+      }
+    } catch (e) {
+      showToast(message: "Error al iniciar sesión: $e");
+    } finally {
+      setState(() {
+        _isSigning = false;
+      });
     }
   }
 
@@ -280,12 +302,26 @@ class _LoginPageState extends State<LoginPage> {
           accessToken: googleSignInAuthentication.accessToken,
         );
 
-        await _firebaseAuth.signInWithCredential(credential);
-        Navigator.pushNamed(context, "/home");
+        UserCredential userCredential =
+            await _firebaseAuth.signInWithCredential(credential);
+
+        // Verificar el estado del usuario en Firestore
+        DocumentSnapshot userDoc = await _firestore
+            .collection('usuarios')
+            .doc(userCredential.user?.uid)
+            .get();
+
+        if (userDoc.exists &&
+            userDoc.data() != null &&
+            userDoc['state'] == true) {
+          Navigator.pushNamed(context, "/home");
+        } else {
+          showToast(message: "Usuario inactivo. Contacta al administrador.");
+          await _firebaseAuth.signOut(); // Cerrar sesión del usuario inactivo
+        }
       }
     } catch (e) {
-      showToast(message: "Ha ocurrido un error $e");
-      print("$e");
+      showToast(message: "Error al iniciar sesión con Google: $e");
     }
   }
 
@@ -294,23 +330,36 @@ class _LoginPageState extends State<LoginPage> {
       // Inicia sesión con Facebook
       final LoginResult result = await FacebookAuth.instance.login();
 
-      // Verifica si la autenticación fue exitosa
       if (result.status == LoginStatus.success) {
-        // Navega a la página de inicio después de iniciar sesión exitosamente
-        Navigator.pushNamed(context, "/home");
+        final OAuthCredential credential =
+            FacebookAuthProvider.credential(result.accessToken!.token);
+
+        UserCredential userCredential =
+            await _firebaseAuth.signInWithCredential(credential);
+
+        // Verificar el estado del usuario en Firestore
+        DocumentSnapshot userDoc = await _firestore
+            .collection('usuarios')
+            .doc(userCredential.user?.uid)
+            .get();
+
+        if (userDoc.exists &&
+            userDoc.data() != null &&
+            userDoc['state'] == true) {
+          Navigator.pushNamed(context, "/home");
+        } else {
+          showToast(message: "Usuario inactivo. Contacta al administrador.");
+          await _firebaseAuth.signOut(); // Cerrar sesión del usuario inactivo
+        }
       } else if (result.status == LoginStatus.cancelled) {
-        // El usuario canceló el inicio de sesión con Facebook
         showToast(message: "Inicio de sesión con Facebook cancelado");
       } else {
-        // Ocurrió un error durante el inicio de sesión con Facebook
         showToast(
             message:
                 "Ha ocurrido un error durante el inicio de sesión con Facebook");
       }
     } catch (e) {
-      // Captura cualquier error
-      showToast(message: "Ha ocurrido un error $e");
-      print("$e");
+      showToast(message: "Error al iniciar sesión con Facebook: $e");
     }
   }
 }

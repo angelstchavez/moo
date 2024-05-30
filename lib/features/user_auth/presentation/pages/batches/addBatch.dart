@@ -124,7 +124,7 @@ class _AddBatchState extends State<AddBatch> {
         ElevatedButton(
           onPressed: () async {
             
-            List<Map<String, dynamic>> fincas = await getFincas();
+            List<Map<String, dynamic>> fincas = await getFincass();
             String fincaID = fincas[0]['uid'];
 
             await addBatch(_nombreController.text,fincaID,imageUrl).then((_) {

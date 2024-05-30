@@ -12,6 +12,7 @@ import 'package:moo/services/service_produccion.dart';
 
 class AddProduction extends StatefulWidget {
   final String animal;
+  final double tLitros;
   
   
 
@@ -19,6 +20,7 @@ class AddProduction extends StatefulWidget {
     Key? key,
     
     required this.animal,
+    required this.tLitros,
     
   }) : super(key: key);
 
@@ -132,13 +134,14 @@ class _AddProductionState extends State<AddProduction> {
                 const SnackBar(content: Text('Procesando Datos')),
               );
               DateTime fecha = DateTime.parse(_fechaController.text);
-               int cantidad = int.tryParse(_cantidadController.text) ?? 0;
+               double cantidad = double.parse(_cantidadController.text);
 
               await addProduccion(
                 widget.animal,
                 cantidad,
                 fecha
               ).then((_) {
+                updateAnimalProduccion(widget.animal, widget.tLitros+cantidad);
                 Navigator.pop(context);
                 
               });

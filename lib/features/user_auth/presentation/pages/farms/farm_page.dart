@@ -22,7 +22,7 @@ class _FarmPageState extends State<FarmPage> {
         title:  Text(currentUser.uid),
       ),
       body: FutureBuilder(
-        future: getFincas(),
+        future: getFincass(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(

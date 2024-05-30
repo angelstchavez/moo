@@ -5,26 +5,30 @@ import 'package:moo/features/user_auth/presentation/pages/batches/addBatch.dart'
 import 'package:moo/features/user_auth/presentation/pages/batches/contentBatch.dart';
 import 'package:moo/features/user_auth/presentation/pages/batches/editBatch.dart';
 import 'package:moo/global/common/toast.dart';
+import 'package:moo/services/firebase_service_Animal.dart';
 import 'package:moo/services/firebase_service_Batch.dart';
 import 'package:moo/services/firebase_service_Farm.dart';
 import 'package:moo/services/firebase_user.dart';
 
-class BatchPage extends StatefulWidget {
-  const BatchPage({Key? key}) : super(key: key);
+class NovillaPage extends StatefulWidget {
+  final String idLote;
+  final String nombreLote;
+  const NovillaPage({Key? key, required this.idLote,required this.nombreLote}) : super(key: key);
 
   @override
-  State<BatchPage> createState() => _BatchPageState();
+  State<NovillaPage> createState() => _NovillaPageState();
 }
 
-class _BatchPageState extends State<BatchPage> {
+class _NovillaPageState extends State<NovillaPage> {
   final currentUser = FirebaseAuth.instance.currentUser!;
   final TextEditingController textController = TextEditingController();
-  List<Map<String, dynamic>> allBatches = [];
-  List<Map<String, dynamic>> filteredBatches = [];
+  List<Map<String, dynamic>> allNovillas = [];
+  List<Map<String, dynamic>> filteredNovillas = [];
   List<Map<String, dynamic>> fincas = [];
   Map<String, dynamic>? user;
   String? userId;
-  String? finca;
+  String? fincaNombre;
+  String? fincaId;
 
   @override
   void initState() {
@@ -33,7 +37,7 @@ class _BatchPageState extends State<BatchPage> {
     textController.addListener(() {
       if (!mounted) return; // Verifica si el widget está montado
       setState(() {
-        filteredBatches = filterBatches(allBatches, textController.text);
+        filteredNovillas = filterNovillas(allNovillas, textController.text);
       });
     });
   }
@@ -58,16 +62,18 @@ class _BatchPageState extends State<BatchPage> {
     if (!mounted) return; // Verifica si el widget está montado
     setState(() {
       fincas = fetchedFincas;
-      finca = fetchedFincas.isNotEmpty ? fetchedFincas[0]['nombre'] : null;
+      fincaNombre =
+          fetchedFincas.isNotEmpty ? fetchedFincas[0]['nombre'] : null;
+      fincaId = fetchedFincas[0]['uid'];
     });
   }
 
-  List<Map<String, dynamic>> filterBatches(
-      List<Map<String, dynamic>> batches, String searchText) {
-    return batches.where((batch) {
-      final batchName = batch['nombre'].toString().toLowerCase();
+  List<Map<String, dynamic>> filterNovillas(
+      List<Map<String, dynamic>> novillas, String searchText) {
+    return novillas.where((novilla) {
+      final novillaName = novilla['nombre'].toString().toLowerCase();
       final searchLower = searchText.toLowerCase();
-      return batchName.contains(searchLower);
+      return novillaName.contains(searchLower);
     }).toList();
   }
 
@@ -79,11 +85,11 @@ class _BatchPageState extends State<BatchPage> {
         flexibleSpace: AnimationSearchBar(
           backIconColor: Colors.black,
           isBackButtonVisible: false,
-          centerTitle: finca ?? 'Finca',
+          centerTitle: fincaNombre ?? 'Finca',
           onChanged: (text) {
             if (!mounted) return; // Verifica si el widget está montado
             setState(() {
-              filteredBatches = filterBatches(allBatches, text);
+              filteredNovillas = filterNovillas(allNovillas, text);
             });
           },
           hintText: 'Buscar...',
@@ -93,7 +99,7 @@ class _BatchPageState extends State<BatchPage> {
         ),
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: getLotesByUser(userId),
+        future: getNovillasSinLote(fincaId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
@@ -120,7 +126,8 @@ class _BatchPageState extends State<BatchPage> {
                           return const AddBatch();
                         },
                       );
-                      if (!mounted) return; // Verifica si el widget está montado
+                      if (!mounted)
+                        return; // Verifica si el widget está montado
                       setState(() {});
                     },
                     icon: const Icon(Icons.add),
@@ -135,9 +142,9 @@ class _BatchPageState extends State<BatchPage> {
               ),
             );
           } else {
-            allBatches = snapshot.data!;
-            filteredBatches = filterBatches(allBatches, textController.text);
-            filteredBatches.sort((a, b) {
+            allNovillas = snapshot.data!;
+            filteredNovillas = filterNovillas(allNovillas, textController.text);
+            filteredNovillas.sort((a, b) {
               int compareByCantidad =
                   (b['cantidad'] ?? 0).compareTo(a['cantidad'] ?? 0);
               return compareByCantidad != 0
@@ -146,9 +153,9 @@ class _BatchPageState extends State<BatchPage> {
             });
 
             return ListView.builder(
-              itemCount: filteredBatches.length,
+              itemCount: filteredNovillas.length,
               itemBuilder: (BuildContext context, int index) {
-                final batch = filteredBatches[index];
+                final novilla = filteredNovillas[index];
                 return SizedBox(
                   height: 100,
                   child: Card(
@@ -183,10 +190,10 @@ class _BatchPageState extends State<BatchPage> {
                       },
                       confirmDismiss: (direction) async {
                         bool result = false;
-                        String nombreLote = batch['nombre'];
-                        String? imgLote = batch['img'];
-                        String idLote = batch['uid'].toString();
-                        int cantidad = batch['cantidad'];
+                        String nombreLote = novilla['nombre'];
+                        String? imgLote = novilla['img'];
+                        String idLote = novilla['uid'].toString();
+                        int cantidad = novilla['cantidad'];
 
                         if (direction == DismissDirection.startToEnd) {
                           result = false;
@@ -200,11 +207,12 @@ class _BatchPageState extends State<BatchPage> {
                               ),
                             ),
                           ).then((value) {
-                            if (!mounted) return; // Verifica si el widget está montado
+                            if (!mounted)
+                              return; // Verifica si el widget está montado
                             setState(() {});
                           });
                         } else {
-                          if (batch['cantidad'] == 0) {
+                          if (novilla['cantidad'] == 0) {
                             result = await showDialog(
                               context: context,
                               builder: (context) {
@@ -233,7 +241,8 @@ class _BatchPageState extends State<BatchPage> {
                                     TextButton(
                                       onPressed: () async {
                                         await deleteBatch(idLote).then((value) {
-                                          if (!mounted) return; // Verifica si el widget está montado
+                                          if (!mounted)
+                                            return; // Verifica si el widget está montado
                                           setState(() {});
                                         });
                                         showToast(
@@ -283,46 +292,74 @@ class _BatchPageState extends State<BatchPage> {
                             );
                           }
                         }
-                        if (!mounted) return result; // Verifica si el widget está montado
+                        if (!mounted)
+                          return result; // Verifica si el widget está montado
                         setState(() {});
                         return result;
                       },
-                      key: Key(batch["uid"]),
+                      key: Key(novilla["uid"]),
                       child: ListTile(
                         leading: CircleAvatar(
                           radius: 40,
-                          backgroundImage: batch['img'] == null
+                          backgroundImage: novilla['img'] == null
                               ? const NetworkImage(
                                   'https://acortar.link/twXsOQ')
-                              : NetworkImage(batch['img']),
+                              : NetworkImage(novilla['img']),
                         ),
                         hoverColor: Colors.green.shade50,
                         onTap: () async {
-                          String nombreLote = batch["nombre"];
-                          String? imagen = batch["img"];
-                          String idLote = batch["uid"];
-                          List<Map<String, dynamic>> fetchedFincas =
-                              await getFincas(userId);
-                          String fetchedFinca = fetchedFincas.isNotEmpty
-                              ? fetchedFincas[0]['uid']
-                              : '';
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ContentBatch(
-                                nombre: nombreLote,
-                                id: idLote,
-                                finca: fetchedFinca,
-                                img: imagen,
-                              ),
-                            ),
-                          ).then((value) {
-                            if (!mounted) return; // Verifica si el widget está montado
-                            setState(() {});
-                          });
+                          String idNovilla = novilla['uid'];
+                          String idNombre = novilla['nombre'];
+                          await showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Icon(
+                                  Icons.question_mark_rounded,
+                                  size: 50,
+                                  color: Colors.blue,
+                                ),
+                                iconColor: Colors.red,
+                                content: Text(
+                                  '¿Está seguro de añadir a $idNombre al lote ${widget.nombreLote}?',
+                                  style: const TextStyle(fontSize: 20),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context, false);
+                                    },
+                                    child: const Text(
+                                      'Cancelar',
+                                      style: TextStyle(
+                                          color: Colors.red, fontSize: 20),
+                                    ),
+                                  ),
+                                  TextButton(
+                                    onPressed: () async {
+                                      await updateLote(idNovilla,widget.idLote).then((value) {
+                                        if (!mounted)
+                                          return; // Verifica si el widget está montado
+                                        setState(() {});
+                                      });
+                                      showToast(
+                                          message:
+                                              'Novilla $idNombre Añadida exitosamente');
+                                      Navigator.pop(context, true);
+                                    },
+                                    child: const Text(
+                                      'Aceptar',
+                                      style: TextStyle(
+                                          color: Colors.green, fontSize: 20),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
                         },
-                        title: Text(batch["nombre"]),
-                        subtitle: Text(batch['cantidad'].toString() ?? ''),
+                        title: Text(novilla["nombre"]),
+                        subtitle: Text(novilla['cantidad'].toString() ?? ''),
                       ),
                     ),
                   ),

@@ -33,7 +33,7 @@ Future<List<Map<String, dynamic>>> getProductionByAnimal(idAnimal) async {
   return produccion;
 }
 
-Future<void> addProduccion(String animal, int cantidad,DateTime now ) async {
+Future<void> addProduccion(String animal, double cantidad,DateTime now ) async {
   
   String formattedDate = "${now.year}-${now.month}-${now.day}";
 
@@ -45,6 +45,13 @@ Future<void> addProduccion(String animal, int cantidad,DateTime now ) async {
 
   });
 }
+
+Future<void>deleteProduccion(String uid)async {
+
+  await db.collection('produccion').doc(uid).delete();
+
+}
+
 
 
 

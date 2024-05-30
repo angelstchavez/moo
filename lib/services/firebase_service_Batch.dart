@@ -4,14 +4,14 @@ import 'package:moo/services/firebase_service_Farm.dart';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
 final currentUser = FirebaseAuth.instance.currentUser!;
-Future<List<Map<String, dynamic>>> getLotesByUser() async {
+Future<List<Map<String, dynamic>>> getLotesByUser(user) async {
   List<Map<String, dynamic>> lotes = [];
   // Obtener referencia a la colección de lotes
   CollectionReference collectionReferenceLotes = db.collection("lotes");
 
   // Realizar la consulta filtrando por el campo 'user'
   QuerySnapshot queryLotes = await collectionReferenceLotes
-      .where('user', isEqualTo: currentUser.uid)
+      .where('user', isEqualTo: user)
       .where('state', isEqualTo: true)
       .get();
 
@@ -24,13 +24,13 @@ Future<List<Map<String, dynamic>>> getLotesByUser() async {
       'uid': documento.id,
       'finca': data['finca'],
       'img': data['img'],
-      'state':data['state'],
+      'state': data['state'],
     };
     lotes.add(lote);
   }
 
   // Simular un pequeño retraso antes de devolver los lotes
- // await Future.delayed(const Duration(milliseconds: 5));
+  // await Future.delayed(const Duration(milliseconds: 5));
   return lotes;
 }
 
@@ -48,7 +48,6 @@ Future<void> addBatch(String nombre, String finca, String? image) async {
 Future<void> updateBatch(String uid, String newNombre) async {
   await db.collection('lotes').doc(uid).update({
     'nombre': newNombre,
-    
   });
 }
 
@@ -59,7 +58,7 @@ Future<void> updateBatchLenght(String uid, int newCantidad) async {
 }
 
 Future<void> deleteBatch(String uid) async {
- await db.collection('lotes').doc(uid).update({
+  await db.collection('lotes').doc(uid).update({
     'state': false,
   });
 }

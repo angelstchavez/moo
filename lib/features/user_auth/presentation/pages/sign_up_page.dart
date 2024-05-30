@@ -9,6 +9,7 @@ import 'package:moo/features/user_auth/presentation/pages/login_page.dart';
 import 'package:moo/features/user_auth/presentation/widgets/form_container_widget.dart';
 import 'package:moo/global/common/toast.dart';
 import 'package:moo/services/firebase_service_Farm.dart';
+import 'package:moo/services/firebase_user.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -22,11 +23,12 @@ class _SignUpPageState extends State<SignUpPage> {
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
-  
+
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _nombreFincaController = TextEditingController();
   final TextEditingController _tamanoFincaController = TextEditingController();
+  final TextEditingController _apellidoController = TextEditingController();
 
   bool isSigningUp = false;
 
@@ -96,22 +98,18 @@ class _SignUpPageState extends State<SignUpPage> {
                   ],
                 ),
                 const SizedBox(
-                      height: 10,
-                    ),
-                const Text('Datos de La finca',),
-                Card(color: Colors.grey.shade100,
-                
-                
-                    child: Column(
+                  height: 10,
+                ),
+                const Text(
+                  'Datos de La finca',
+                ),
+                Column(
                   children: [
-                    
-                     const SizedBox(
+                    const SizedBox(
                       height: 20,
                       width: 20,
                     ),
                     FormContainerWidget(
-                      
-                      
                       hintText: "Nombre de la finca",
                       controller: _nombreFincaController,
                     ),
@@ -123,62 +121,65 @@ class _SignUpPageState extends State<SignUpPage> {
                       hintText: "Tamaño de la finca",
                       controller: _tamanoFincaController,
                       inputType: TextInputType.number,
-                    ), 
-                    
-                  ],
-                )),
-                const Text('Datos de Usuario',),
-                Card(
-                  color: Colors.grey.shade100,
-                  child: Center(
-                    child: Column(
-                      children: [
-                        const SizedBox(
-                        height: 20,
-                        width: 20,
-                      ),
-                        FormContainerWidget(
-                          hintText: "Nombre",
-                          controller: _nameController,
-                        ),
-                        const SizedBox(
-                        height: 20,
-                        width: 20,
-                      ),
-                      FormContainerWidget(
-                          hintText: "Telefono",
-                          controller: _phoneController,
-                          inputType: TextInputType.phone,
-                        ),
-                        const SizedBox(
-                        height: 20,
-                        width: 20,
-                      ),
-                        FormContainerWidget(
-                          hintText: "Correo electrónico",
-                          controller: _emailController,
-                        ),
-                        const SizedBox(
-                        height: 20,
-                        width: 20,
-                      ),
-                        FormContainerWidget(
-                          
-                          hintText: "Contraseña",
-                          isPasswordField: true,
-                          controller: _passwordController,
-                        ),
-                        const SizedBox(
-                        height: 20,
-                        width: 20,
-                      ),
-                      ],
                     ),
-                  ),
+                  ],
+                ),
+                const Text(
+                  'Datos de Usuario',
+                ),
+                Column(
+                  children: [
+                    const SizedBox(
+                      height: 20,
+                      width: 20,
+                    ),
+                    FormContainerWidget(
+                      hintText: "Nombre",
+                      controller: _nameController,
+                    ),
+                    const SizedBox(
+                      height: 20,
+                      width: 20,
+                    ),
+                    FormContainerWidget(
+                      hintText: "Apellido",
+                      controller: _apellidoController,
+                    ),
+                    const SizedBox(
+                      height: 20,
+                      width: 20,
+                    ),
+                    FormContainerWidget(
+                      hintText: "Telefono",
+                      controller: _phoneController,
+                      inputType: TextInputType.phone,
+                    ),
+                    const SizedBox(
+                      height: 20,
+                      width: 20,
+                    ),
+                    FormContainerWidget(
+                      hintText: "Correo electrónico",
+                      controller: _emailController,
+                    ),
+                    const SizedBox(
+                      height: 20,
+                      width: 20,
+                    ),
+                    FormContainerWidget(
+                      hintText: "Contraseña",
+                      isPasswordField: true,
+                      controller: _passwordController,
+                    ),
+                    const SizedBox(
+                      height: 20,
+                      width: 20,
+                    ),
+                  ],
                 ),
                 const SizedBox(
-                      height: 10,
-                    ),
+                  height: 10,
+                ),
                 GestureDetector(
                   onTap: _signUp,
                   child: Container(
@@ -237,43 +238,43 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   void _signUp() async {
-  setState(() {
-    isSigningUp = true;
-  });
+    setState(() {
+      isSigningUp = true;
+    });
 
-  String email = _emailController.text;
-  String password = _passwordController.text;
-  String name = _nameController.text;
-  
+    String email = _emailController.text;
+    String password = _passwordController.text;
+    String name = _nameController.text;
 
-  User? user = await _auth.signUpWithEmailAndPassword(email, password);
+    User? user = await _auth.signUpWithEmailAndPassword(email, password);
 
- 
+    setState(() {
+      isSigningUp = false;
+    });
 
-    
-  setState(() {
-    isSigningUp = false;
-  });
+    if (user != null) {
+      final currentUser = FirebaseAuth.instance.currentUser!;
+      currentUser.updateDisplayName('propietario');
+      //user.displayName = _nameController.text;
+      String userId = user.uid; // Obtiene el ID del usuario recién creado
+      crearFinca(userId);
+      crearUser(userId); // Pasa el ID del usuario a la función crearFinca
+      showToast(message: "Usuario creado exitosamente");
+      Navigator.pushNamed(context, "/login");
+    } else {
+      showToast(message: "Ha ocurrido un error");
+    }
+  }
 
-  if (user != null) {
-    currentUser.updateDisplayName(name);
-    //user.displayName = _nameController.text;
-    String userId = user.uid; // Obtiene el ID del usuario recién creado
-    crearFinca(userId); // Pasa el ID del usuario a la función crearFinca
-    showToast(message: "Usuario creado exitosamente");
-    Navigator.pushNamed(context, "/login");
-  } else {
-    showToast(message: "Ha ocurrido un error");
+  void crearFinca(String userId) async {
+    int tamano = int.tryParse(_tamanoFincaController.text) ?? 0;
+
+    // Aquí puedes usar userId para asociar la finca con el usuario
+    await addFarm(_nombreFincaController.text, tamano, userId);
+  }
+
+  void crearUser(String userId) async {
+    await addUserP(userId, userId,_nameController.text, _apellidoController.text,
+        _emailController.text, _phoneController.text);
   }
 }
-
-void crearFinca(String userId) async {
-  int tamano = int.tryParse(_tamanoFincaController.text) ?? 0;
-
-  // Aquí puedes usar userId para asociar la finca con el usuario
-  await addFarm(_nombreFincaController.text, tamano, userId);
-}
-
-
-}
-

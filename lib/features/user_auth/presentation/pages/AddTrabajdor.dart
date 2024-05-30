@@ -281,9 +281,7 @@ class _AddTrabajadorState extends State<AddTrabajador> {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Procesando Datos')),
               );
-              setState(() {
-                Navigator.pop(context);
-              });
+              
             }
           },
           child: const Text('Guardar'),
@@ -308,7 +306,8 @@ class _AddTrabajadorState extends State<AddTrabajador> {
                 
 
                 if (user != null) {
-                  currentUser.updateDisplayName(name);
+                  currentUser.updateDisplayName('trabajador');
+                  currentUser.updatePhotoURL('$imageUrl');
                   //user.displayName = _nameController.text;
                   String userId =user.uid; // Obtiene el ID del usuario recién creado
                   crearUser(userId);
@@ -323,17 +322,22 @@ class _AddTrabajadorState extends State<AddTrabajador> {
 
     DateTime fechaNacimiento = DateTime.parse(_fechaController.text);
     
-    await addUser(
+  
+    await addUserT(
       userId, 
-      _nombreController.text.toString(), 
+      _nombreController.text, 
       _apellidoController.text, 
       _emailController.text, 
       _telefonoController.text, 
-      'trabajador', 
       currentUser.uid, 
       fechaNacimiento, 
       _sexoController.text,
-      widget.finca
-      );
+      widget.finca,
+      'trabajador'
+      ).then((_){
+        setState(() {
+          Navigator.pop(context);
+        });
+      });
   }
 }

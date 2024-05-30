@@ -8,6 +8,7 @@ import 'package:get/get_utils/get_utils.dart';
 import 'package:moo/features/user_auth/presentation/pages/animals/addAnimal.dart';
 import 'package:moo/features/user_auth/presentation/pages/animals/contentAnimal.dart';
 import 'package:moo/features/user_auth/presentation/pages/animals/editAnimal.dart';
+import 'package:moo/features/user_auth/presentation/pages/animals/novillas_page.dart';
 
 import 'package:moo/features/user_auth/presentation/pages/batches/addBatch.dart';
 import 'package:moo/features/user_auth/presentation/pages/batches/batch_page.dart';
@@ -52,23 +53,24 @@ class _ContentBatchState extends State<ContentBatch> {
 
   // Método para cargar los datos
   Future<void> loadData() async {
-    // Puedes realizar aquí cualquier operación de carga de datos necesaria
-    // Por ejemplo, obtener la longitud de los datos o realizar una solicitud al servidor
     var data = await getVacasByLote(widget.id);
     setState(() {
       dataLength = data.length;
+      updateBatchLenght(widget.id, dataLength);
     });
   }
 
   @override
   void initState() {
     super.initState();
+    
     loadData(); // Método para cargar los datos al abrir la página
     textController.addListener(() {
       setState(() {
         filteredAnimals = filterAnimals(allAnimals, textController.text);
       });
     });
+    
   }
 
   double? h;
@@ -103,42 +105,12 @@ class _ContentBatchState extends State<ContentBatch> {
                     horizontalPadding: 5,
                     searchIconColor: Colors.white,
                   )))),
-      // AppBar(
-      //   leading: Row(
-      //     children: [
-      //       IconButton(
-      //         onPressed: () {
-      //           Navigator.pop(context);
-      //         },
-      //         icon: const Icon(Icons.arrow_back_ios_new),
-      //       ),
-      //       AnimationSearchBar(
-      //           backIconColor: Colors.black,
-      //           isBackButtonVisible: false,
-      //           centerTitle: widget.nombre,
-      //           onChanged: (text) {
-      //             setState(() {
-      //               filteredAnimals = filterAnimals(allAnimals, text);
-      //             });
-      //           },
-      //           hintText: 'Buscar...',
-      //           searchTextEditingController: textController,
-      //           horizontalPadding: 5,
-      //           searchIconColor: Colors.black,
-
-      //         ),
-      //     ],
-      //   ),
-      //   //actions: [IconButton(onPressed: (){}, icon: const Icon(Icons.arrow_back_ios_new))],
-
-      // ),
       body: Column(
         children: [
           SizedBox(
             height: h,
             width: MediaQuery.of(context).size.width,
             child: Column(
-              // Aquí puedes personalizar tu Card según tus necesidades
               children: [
                 Card(
                   color: Colors.brown.shade400,
@@ -147,16 +119,14 @@ class _ContentBatchState extends State<ContentBatch> {
                     child: Column(
                       children: [
                         AspectRatio(
-                          aspectRatio:
-                              16 / 9, // Proporción deseada (puedes ajustarla)
+                          aspectRatio: 16 / 9,
                           child: widget.img != null
                               ? Image.network('${widget.img}',
                                   fit: BoxFit.cover)
                               : Image.network('https://acortar.link/m8RozS',
                                   fit: BoxFit.cover),
                         ),
-                        const SizedBox(
-                            height: 8), // Espacio entre la imagen y el texto
+                        const SizedBox(height: 8),
                         Text(
                           dataLength != null
                               ? 'Total de animales: $dataLength'
@@ -201,7 +171,6 @@ class _ContentBatchState extends State<ContentBatch> {
                                 return const AddBatch();
                               },
                             );
-                            //Refresh
                             setState(() {});
                           },
                           icon: const Icon(Icons.add),
@@ -224,12 +193,9 @@ class _ContentBatchState extends State<ContentBatch> {
                   filteredAnimals.sort((a, b) {
                     int compareByProduccion =
                         (b['produccion'] ?? 0).compareTo(a['produccion'] ?? 0);
-                    if (compareByProduccion != 0 ||
-                        compareByProduccion != null) {
-                      // Si la comparación por cantidad no es igual, devuelve el resultado de la comparación por cantidad
+                    if (compareByProduccion != 0) {
                       return compareByProduccion;
                     } else {
-                      // Si la comparación por cantidad es igual, compara por nombre
                       return a['nombre'].compareTo(b['nombre']);
                     }
                   });
@@ -237,11 +203,9 @@ class _ContentBatchState extends State<ContentBatch> {
                     itemCount: filteredAnimals.length,
                     itemBuilder: (BuildContext context, int index) {
                       final animal = filteredAnimals[index];
-                      // Aquí retornamos una Card antes de un ListTile
                       return Column(
                         children: [
                           Card(
-                            // Personaliza tu Card según sea necesario
                             child: Dismissible(
                               background: Container(
                                 color: Colors.blue,
@@ -263,7 +227,9 @@ class _ContentBatchState extends State<ContentBatch> {
                                   size: 30,
                                 ),
                               ),
-                              direction: DismissDirection.horizontal,
+                              direction: currentUser.displayName != 'trabajador'
+                                  ? DismissDirection.horizontal
+                                  : DismissDirection.startToEnd,
                               onDismissed: (direction) async {
                                 if (direction == DismissDirection.startToEnd) {
                                   // Manejo de la edición
@@ -362,18 +328,18 @@ class _ContentBatchState extends State<ContentBatch> {
                                       filteredAnimals[index]["nombre"];
                                   String? imgAnimal =
                                       filteredAnimals[index]["img"];
-
                                   String idAnimal =
                                       filteredAnimals[index]["uid"];
                                   String fechaAnimal =
                                       filteredAnimals[index]["fecha"];
                                   bool parto = filteredAnimals[index]["parto"];
-                                  int? edadTernero =
+                                  int edadTernero =
                                       filteredAnimals[index]["edadTernero"];
-                                      String finca =filteredAnimals[index]['finca'];
+                                  String finca =
+                                      filteredAnimals[index]['finca'];
 
                                   if (parto) {
-                                    if (edadTernero! < 1) {
+                                    if (edadTernero < 1) {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -383,7 +349,6 @@ class _ContentBatchState extends State<ContentBatch> {
                                                 img: imgAnimal)),
                                       );
                                     }
-                                    
                                   } else {
                                     await showDialog(
                                       context: context,
@@ -414,7 +379,7 @@ class _ContentBatchState extends State<ContentBatch> {
                                                             id: idAnimal,
                                                             img: imgAnimal,
                                                             parto: parto,
-                                                            finca:finca ,
+                                                            finca: finca,
                                                           )),
                                                 ).then((value) => setState(() {
                                                       Navigator.pop(context);
@@ -465,19 +430,50 @@ class _ContentBatchState extends State<ContentBatch> {
           await showDialog(
             context: context,
             builder: (BuildContext context) {
-              return AddAnimal(
-                lote: widget.id,
-                finca: widget.finca,
-                dataLength: dataLength,
+              return AlertDialog(
+                title: const Text('Selecciona una opción'),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.add),
+                      title: const Text('Añadir Animal'),
+                      onTap: () {
+                        Navigator.pop(context); // Cerrar el diálogo
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AddAnimal(
+                              lote: widget.id,
+                              finca: widget.finca,
+                              dataLength: dataLength,
+                            );
+                          },
+                        ).then((value) {
+                          setState(() {
+                            loadData();
+                          });
+                        });
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.select_all),
+                      title: const Text('Seleccionar Novilla'),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>  NovillaPage(idLote: widget.id,nombreLote: widget.nombre,)),
+                        ).then((value) => setState(() {
+                              Navigator.pop(context);
+                            }));
+                      },
+                    ),
+                  ],
+                ),
               );
             },
-          ).then((value) {
-            setState(() {
-              loadData();
-            });
-          });
-          //Refresh
-          setState(() {});
+          );
         },
         child: const Icon(
           Icons.add,

@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:moo/features/user_auth/presentation/pages/animals/addAnimal.dart';
@@ -26,12 +27,16 @@ class _NavBarState extends State<NavBar> {
     BatchPage(),
     AnimalPage(),
     //ProductionPage(),
-    PorfilePage(),
+    // ProfilePage(),
   ];
   void _logout() async {
     try {
-      await FirebaseAuth.instance.signOut();
-      Navigator.pushNamed(context, "/login");
+      
+      
+        await FirebaseAuth.instance.signOut();
+
+
+       Navigator.pushNamed(context, "/login");
       showToast(message: "Sesión cerrada exitosamente");
     } catch (e) {
       showToast(message: "Error al cerrar sesión: $e");
@@ -42,7 +47,7 @@ class _NavBarState extends State<NavBar> {
     Navigator.pop(context);
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const PorfilePage()),
+      MaterialPageRoute(builder: (context) => const ProfilePage()),
     );
   }
 
@@ -50,7 +55,7 @@ class _NavBarState extends State<NavBar> {
     Navigator.pop(context);
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const PorfilePage()),
+      MaterialPageRoute(builder: (context) => const ProfilePage()),
     );
   }
 
@@ -125,10 +130,10 @@ class _NavBarState extends State<NavBar> {
           //     icon:
           //         Icon(Icons.view_agenda_rounded, color: Colors.grey.shade600),
           //     label: 'Producción'),
-          NavigationDestination(
-            icon: Icon(Icons.person_2, color: Colors.grey.shade600),
-            label: 'Perfil',
-          ),
+          // NavigationDestination(
+          //   icon: Icon(Icons.person_2, color: Colors.grey.shade600),
+          //   label: 'Perfil',
+          // ),
         ],
         selectedIndex: currentIndex,
         onDestinationSelected: (int index) {

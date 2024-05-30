@@ -35,7 +35,7 @@ dependencies:
   #dependencies firebase
   firebase_core: ^2.30.0
   cloud_firestore: 
-  firebase_auth: ^4.19.1
+  firebase_auth: ^4.19.6
   firebase_storage: ^11.7.4
   fluttertoast: ^8.2.5
   font_awesome_flutter: ^10.7.0
@@ -56,7 +56,9 @@ dependencies:
   animation_search_bar: ^0.0.10
   riverpod: ^2.5.1
   gap: ^3.0.1
-  
+  flutter_secure_storage: ^9.2.2
+  shared_preferences: ^2.2.3
+  flutter_cache_manager: ^3.3.2
  
   
  
@@ -93,7 +95,13 @@ flutter:
     - assets/icon/valla.png
     - assets/icon/vaca.png
     - assets/icon/carne.png
+    - assets/icon/granjero.png
+    - assets/icon/granjeroI.png
+    - assets/icon/1st.png
+    - assets/icon/2st.png
+    - assets/icon/3st.png
     - assets/vaca.jpg
+    
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
