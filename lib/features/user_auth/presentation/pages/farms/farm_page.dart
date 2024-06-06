@@ -165,23 +165,23 @@ class _FarmPageState extends State<FarmPage> {
           }
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color.fromARGB(255, 201, 143, 122),
-        onPressed: () async {
-          await showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return const AddBatch();
-            },
-          );
-          //Refresh
-          setState(() {});
-        },
-        child: const Icon(
-          Icons.add,
-          color: Colors.white,
-        ),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   backgroundColor: const Color.fromARGB(255, 201, 143, 122),
+      //   onPressed: () async {
+      //     await showDialog(
+      //       context: context,
+      //       builder: (BuildContext context) {
+      //         return const AddBatch();
+      //       },
+      //     );
+      //     //Refresh
+      //     setState(() {});
+      //   },
+      //   child: const Icon(
+      //     Icons.add,
+      //     color: Colors.white,
+      //   ),
+      // ),
     );
   }
 }

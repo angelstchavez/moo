@@ -6,14 +6,14 @@ import 'package:moo/services/firebase_service_Animal.dart';
 class DrawerWidget extends StatelessWidget {
   final void Function()? onHomeTap;
   final void Function()? onProfileTap;
-  final void Function()? onTrabajadorTap;
+  // final void Function()? onTrabajadorTap;
   final void Function()? onSignUp;
 
   const DrawerWidget({
     Key? key,
     this.onHomeTap,
     this.onProfileTap,
-    this.onTrabajadorTap,
+    // this.onTrabajadorTap,
     this.onSignUp,
   }) : super(key: key);
 
@@ -98,36 +98,36 @@ class DrawerWidget extends StatelessWidget {
               const Divider(
                 thickness: 0.06,
               ),
-              ListTile(
-                onTap: onTrabajadorTap,
-                leading: Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(100),
-                      color: Colors.green.shade50),
-                  child: const Icon(
-                    Icons.groups_2,
-                    color: Colors.lime,
-                  ),
-                ),
-                title: const Text(
-                  'Trabajadores',
-                  style: TextStyle(color: Colors.white),
-                ),
-                trailing: Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(100),
-                      color: Colors.green.shade500),
-                  child: const Icon(
-                    Icons.arrow_forward_ios_rounded,
-                    size: 18,
-                    color: Colors.white,
-                  ),
-                ),
-              )
+              // ListTile(
+              //   onTap: onTrabajadorTap,
+              //   leading: Container(
+              //     width: 40,
+              //     height: 40,
+              //     decoration: BoxDecoration(
+              //         borderRadius: BorderRadius.circular(100),
+              //         color: Colors.green.shade50),
+              //     child: const Icon(
+              //       Icons.groups_2,
+              //       color: Colors.lime,
+              //     ),
+              //   ),
+              //   title: const Text(
+              //     'Trabajadores',
+              //     style: TextStyle(color: Colors.white),
+              //   ),
+              //   trailing: Container(
+              //     width: 40,
+              //     height: 40,
+              //     decoration: BoxDecoration(
+              //         borderRadius: BorderRadius.circular(100),
+              //         color: Colors.green.shade500),
+              //     child: const Icon(
+              //       Icons.arrow_forward_ios_rounded,
+              //       size: 18,
+              //       color: Colors.white,
+              //     ),
+              //   ),
+              // )
             ],
           ),
           Padding(

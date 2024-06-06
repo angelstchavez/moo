@@ -65,7 +65,7 @@ class _NavBarState extends State<NavBar> {
       drawer: DrawerWidget(
         onProfileTap: _profile,
         onSignUp: _logout,
-        onTrabajadorTap: _trabajador,
+        // onTrabajadorTap: _trabajador,
       ),
       appBar: AppBar(
           backgroundColor: Colors.green.shade800,

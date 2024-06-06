@@ -143,6 +143,7 @@ class _ProfilePageState extends State<ProfilePage> {
         imageUrl = downloadUrl;
 
         currentUser.updatePhotoURL(downloadUrl);
+        updateImgUser(id, '$imageUrl');
       });
       //    Navigator.pushReplacement(
       //   context,
@@ -191,10 +192,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     CircleAvatar(
                       backgroundColor: Colors.grey.shade200,
                       radius: 60,
-                      backgroundImage: currentUser.photoURL != null
-                          ? NetworkImage('${currentUser.photoURL}')
+                      backgroundImage: imageUrl != null
+                          ? NetworkImage('$imageUrl')
                           : null,
-                      child: currentUser.photoURL == null
+                      child: imageUrl == null
                           ? const Icon(Icons.person,
                               color: Colors.grey, size: 60)
                           : null,
@@ -404,7 +405,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                         id,
                                         _nameController.text,
                                         _apellidoController.text,
-                                        _phoneController.text.trim())
+                                        _phoneController.text.trim(),
+                                        )
                                     .then((_) {
                                   setState(() {
                                     _loadUserData();
@@ -429,6 +431,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   thickness: 0.5,
                 ),
                 ListTile(
+                  onTap: _logout,
                     leading: Container(
                       width: 40,
                       height: 40,
@@ -447,5 +450,18 @@ class _ProfilePageState extends State<ProfilePage> {
         ],
       ),
     );
+  }
+  void _logout() async {
+    try {
+      
+      
+        await FirebaseAuth.instance.signOut();
+
+
+       Navigator.pushNamed(context, "/login");
+      showToast(message: "Sesión cerrada exitosamente");
+    } catch (e) {
+      showToast(message: "Error al cerrar sesión: $e");
+    }
   }
 }

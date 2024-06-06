@@ -103,7 +103,7 @@ Future<List<Map<String, dynamic>>> getUserByJefe() async {
   return users;
 }
 
-Future<void> addUserT(String user,String nombre, String apellido, String email,String telefono,String jefe,DateTime fecha,String sexo,String finca,String rol) async {
+Future<void> addUserT(String user,String nombre, String apellido, String email,String telefono,String jefe,DateTime fecha,String sexo,String finca,String rol,String? img) async {
   String formattedDate = "${fecha.year}-${fecha.month}-${fecha.day}";
   await db.collection('usuarios').add({
     'idJefe':jefe,
@@ -112,7 +112,7 @@ Future<void> addUserT(String user,String nombre, String apellido, String email,S
     'apellido':apellido,
     'email': email,
     'telefono':telefono,
-    'img':null,
+    'img':img,
     'rol':rol,
     'sexo':sexo,
     'fechaNacimiento':formattedDate,
@@ -143,6 +143,14 @@ Future<void> updateUser(String? uid,String nombre, String apellido,String telefo
     'nombre': nombre,
     'apellido':apellido,
     'telefono': telefono,
+    
+  
+  });
+}
+Future<void> updateImgUser(String? uid, String img) async {
+  await db.collection('usuarios').doc(uid).update({
+    'img': img
+    
   
   });
 }
@@ -150,6 +158,9 @@ Future<void> updateStateUser(String uid,bool state) async {
   await db.collection('usuarios').doc(uid).update({
     'state':state
   });
+}
+Future<void> deleteUser(String uid) async {
+  await db.collection('usuarios').doc(uid).delete();
 }
 
 

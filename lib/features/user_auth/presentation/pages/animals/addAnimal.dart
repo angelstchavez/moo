@@ -5,6 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:gap/gap.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:moo/services/firebase_service_Animal.dart';
@@ -111,7 +112,11 @@ class _AddAnimalState extends State<AddAnimal> {
   Widget build(BuildContext context) {
     return AlertDialog(
       scrollable: true,
-      title: const Text('Agregar Animal'),
+      title: const Text(
+        'Agregar Animal',
+        textAlign: TextAlign.center,
+        style: TextStyle(fontWeight: FontWeight.bold),
+      ),
       content: Container(
         constraints: const BoxConstraints(maxWidth: 400),
         padding: const EdgeInsets.all(16),
@@ -120,23 +125,52 @@ class _AddAnimalState extends State<AddAnimal> {
           child: Column(
             children: [
               TextFormField(
-                enableSuggestions: true,
+                style: const TextStyle(fontSize: 20),
+                maxLength: 20,
+                cursorColor: Colors.black,
                 controller: _nombreController,
-                autofocus: true,
-                decoration: const InputDecoration(
-                  labelText: 'Nombre',
-                  hintText: 'Ingrese el nombre del Animal',
-                ),
+                decoration: InputDecoration(
+                    alignLabelWithHint: true,
+                    labelText: 'nombre',
+                    labelStyle: const TextStyle(fontSize: 20),
+                    hintText: 'ingrese el nombre',
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 1.0, horizontal: 20),
+                    filled: true,
+                    fillColor: Colors.grey.shade300,
+                    floatingLabelStyle:
+                        const TextStyle(color: Colors.black, fontSize: 20),
+                    hintStyle: const TextStyle(color: Colors.grey),
+                    border: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.green),
+                        borderRadius: BorderRadius.circular(100)),
+                    focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.green),
+                        borderRadius: BorderRadius.circular(100))),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Por favor, ingrese el nombre del animal';
+                    return 'Por favor, ingrese el nombre';
                   }
+
                   return null;
                 },
               ),
+              const Gap(10),
               DropdownSearch<String>(
-                dropdownDecoratorProps: const DropDownDecoratorProps(
+                dropdownDecoratorProps: DropDownDecoratorProps(
                   dropdownSearchDecoration: InputDecoration(
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 1.0, horizontal: 20),
+                    filled: true,
+                    fillColor: Colors.grey.shade300,
+                    floatingLabelStyle: const TextStyle(color: Colors.black),
+                    hintStyle: const TextStyle(color: Colors.black),
+                    border: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.green),
+                        borderRadius: BorderRadius.circular(100)),
+                    focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.green),
+                        borderRadius: BorderRadius.circular(100)),
                     labelText: "Raza",
                     hintText: "Selecciona una Raza",
                   ),
@@ -149,8 +183,15 @@ class _AddAnimalState extends State<AddAnimal> {
                         selectedRaza ?? ''; // Update the controller value
                   });
                 },
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'La raza es obligatoria!';
+                  }
+                  return null;
+                },
               ),
-              TextField(
+              const Gap(20),
+              TextFormField(
                 decoration: InputDecoration(
                   suffixIcon: IconButton(
                     onPressed: () {
@@ -188,36 +229,32 @@ class _AddAnimalState extends State<AddAnimal> {
                     },
                     icon: const Icon(Icons.calendar_month),
                   ),
+                  contentPadding:
+                      const EdgeInsets.symmetric(vertical: 1.0, horizontal: 20),
+                  filled: true,
+                  fillColor: Colors.grey.shade300,
+                  floatingLabelStyle: const TextStyle(color: Colors.black),
+                  hintStyle: const TextStyle(color: Colors.black),
+                  border: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.green),
+                      borderRadius: BorderRadius.circular(100)),
+                  focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.green),
+                      borderRadius: BorderRadius.circular(100)),
+                  labelText: "Fecha de nacimiento",
                 ),
                 readOnly: true,
                 controller: _fechaController,
                 keyboardType: TextInputType.datetime,
               ),
+              const Gap(20),
               IconButton(
                 onPressed: _selectImageSource,
-                icon: const Icon(Icons.add_photo_alternate),
+                icon: const Icon(
+                  Icons.add_photo_alternate,
+                  size: 35,
+                ),
               ),
-              const Text(
-                'Opcional',
-                style: TextStyle(fontSize: 13, color: Colors.blue),
-              ),
-              TextButton(
-                  onPressed: () {},
-                  child: Row(
-                    children: [
-                      const Text(
-                        'Selccionar Novilla',
-                        style: TextStyle(color: Colors.green, fontSize: 16),
-                      ),
-                      IconButton(onPressed: (){},
-                       icon: const FaIcon(Icons.info,color: Colors.lightBlueAccent,),
-                       tooltip: 'Aqui puedes seleccionar una novilla criada aqui',
-                       
-                       
-                       ),
-                       
-                    ],
-                  )),
             ],
           ),
         ),
@@ -227,7 +264,8 @@ class _AddAnimalState extends State<AddAnimal> {
           onPressed: () async {
             Navigator.pop(context);
           },
-          child: const Text('Cancelar'),
+          child: const Text('Cancelar',style: TextStyle(
+                color: Colors.grey, fontWeight: FontWeight.bold, fontSize: 17),),
         ),
         ElevatedButton(
           onPressed: () async {
@@ -253,7 +291,12 @@ class _AddAnimalState extends State<AddAnimal> {
               });
             }
           },
-          child: const Text('Guardar'),
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.limeAccent),
+          child: const Text(
+            'Guardar',
+            style: TextStyle(
+                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 17),
+          ),
         ),
       ],
     );

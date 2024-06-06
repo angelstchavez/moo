@@ -13,15 +13,11 @@ import 'package:moo/services/service_produccion.dart';
 class AddProduction extends StatefulWidget {
   final String animal;
   final double tLitros;
-  
-  
 
   const AddProduction({
     Key? key,
-    
     required this.animal,
     required this.tLitros,
-    
   }) : super(key: key);
 
   @override
@@ -29,16 +25,16 @@ class AddProduction extends StatefulWidget {
 }
 
 class _AddProductionState extends State<AddProduction> {
-  final TextEditingController _cantidadController = TextEditingController(text: '');
+  final TextEditingController _cantidadController =
+      TextEditingController(text: '');
 
-  final TextEditingController _fechaController = TextEditingController(text: DateFormat('yyyy-MM-dd').format(DateTime.now()));
-
- 
+  final TextEditingController _fechaController = TextEditingController(
+      text: DateFormat('yyyy-MM-dd').format(DateTime.now()));
 
   @override
   void dispose() {
     _cantidadController.dispose();
-    
+
     _fechaController.dispose();
     super.dispose();
   }
@@ -47,15 +43,14 @@ class _AddProductionState extends State<AddProduction> {
 
   DateTime dateTime = DateTime.now();
 
-  
-
-  
- 
-
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Agregar produccion'),
+      title: const Text(
+        'Agregar Producción',
+        textAlign: TextAlign.center,
+        style: TextStyle(fontWeight: FontWeight.bold),
+      ),
       content: SingleChildScrollView(
         child: Container(
           constraints: const BoxConstraints(maxWidth: 400),
@@ -65,56 +60,89 @@ class _AddProductionState extends State<AddProduction> {
             child: Column(
               children: [
                 TextFormField(
-                  enableSuggestions: true,
+                  style: const TextStyle(fontSize: 20),
+                  maxLength: 20,
+                  cursorColor: Colors.black,
                   controller: _cantidadController,
-                  autofocus: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Cantidad (Lt)',
-                    hintText: 'Ingrese la cantidad',
-                  ),
+                  decoration: InputDecoration(
+                      alignLabelWithHint: true,
+                      labelText: 'Cantidad(lt)',
+                      labelStyle: const TextStyle(fontSize: 20),
+                      hintText: 'ingrese la cantidad',
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 1.0, horizontal: 20),
+                      filled: true,
+                      fillColor: Colors.grey.shade300,
+                      floatingLabelStyle:
+                          const TextStyle(color: Colors.black, fontSize: 20),
+                      hintStyle: const TextStyle(color: Colors.grey),
+                      border: OutlineInputBorder(
+                          borderSide: const BorderSide(color: Colors.green),
+                          borderRadius: BorderRadius.circular(100)),
+                      focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(color: Colors.green),
+                          borderRadius: BorderRadius.circular(100))),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Por favor, ingrese la cantidad';
                     }
+
                     return null;
                   },
-                  keyboardType: TextInputType.number,
-                  
                 ),
-              
                 TextFormField(
-                  onTap: () {
-                    showCupertinoModalPopup(
-                      context: context,
-                      builder: (BuildContext context) => SizedBox(
-                        height: 250,
-                        child: CupertinoDatePicker(
-                          backgroundColor: Colors.white,
-                          initialDateTime: dateTime,
-                          onDateTimeChanged: (DateTime newTime) {
-                            setState(() => dateTime = newTime);
-                            _fechaController.text = '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}';
-                          },
-                          use24hFormat: true,
-                          mode: CupertinoDatePickerMode.date,
-                        ),
-                      ),
-                    );
-                  },
+                  decoration: InputDecoration(
+                    suffixIcon: IconButton(
+                      onPressed: () {
+                        DateTime currentDate = DateTime.now();
+                        DateTime initialDate = DateTime(currentDate.year,
+                            currentDate.month, currentDate.day);
+                        DateTime minDate = DateTime(currentDate.year,
+                            currentDate.month, currentDate.day);
+                        DateTime maxDate = DateTime(currentDate.year,
+                            currentDate.month, currentDate.day);
+
+                        showCupertinoModalPopup(
+                          context: context,
+                          builder: (BuildContext context) => SizedBox(
+                            height: 250,
+                            child: CupertinoDatePicker(
+                              backgroundColor: Colors.white,
+                              initialDateTime: initialDate,
+                              maximumDate: maxDate,
+                              onDateTimeChanged: (DateTime newTime) {
+                                setState(() {
+                                  dateTime = newTime;
+                                  _fechaController.text =
+                                      DateFormat('yyyy-MM-dd').format(newTime);
+                                });
+                              },
+                              use24hFormat: true,
+                              mode: CupertinoDatePickerMode.date,
+                            ),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.calendar_month),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 1.0, horizontal: 20),
+                    filled: true,
+                    fillColor: Colors.grey.shade300,
+                    floatingLabelStyle: const TextStyle(color: Colors.black),
+                    hintStyle: const TextStyle(color: Colors.black),
+                    border: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.green),
+                        borderRadius: BorderRadius.circular(100)),
+                    focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.green),
+                        borderRadius: BorderRadius.circular(100)),
+                    labelText: "Fecha de producción",
+                  ),
                   readOnly: true,
                   controller: _fechaController,
-                  decoration: const InputDecoration(
-                    labelText: 'Fecha de Producción',
-                  ),
                   keyboardType: TextInputType.datetime,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Por favor, ingrese la fecha de producción';
-                    }
-                    return null;
-                  },
                 ),
-                
               ],
             ),
           ),
@@ -125,7 +153,11 @@ class _AddProductionState extends State<AddProduction> {
           onPressed: () async {
             Navigator.pop(context);
           },
-          child: const Text('Cancelar'),
+          child: const Text(
+            'Cancelar',
+            style: TextStyle(
+                color: Colors.grey, fontWeight: FontWeight.bold, fontSize: 17),
+          ),
         ),
         ElevatedButton(
           onPressed: () async {
@@ -134,22 +166,22 @@ class _AddProductionState extends State<AddProduction> {
                 const SnackBar(content: Text('Procesando Datos')),
               );
               DateTime fecha = DateTime.parse(_fechaController.text);
-               double cantidad = double.parse(_cantidadController.text);
+              double cantidad = double.parse(_cantidadController.text);
 
-              await addProduccion(
-                widget.animal,
-                cantidad,
-                fecha
-              ).then((_) {
-                updateAnimalProduccion(widget.animal, widget.tLitros+cantidad);
+              await addProduccion(widget.animal, cantidad, fecha).then((_) {
+                updateAnimalProduccion(
+                    widget.animal, widget.tLitros + cantidad);
                 Navigator.pop(context);
-                
               });
             }
           },
-          child: const Text('Guardar'),
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.limeAccent),
+          child: const Text(
+            'Guardar',
+            style: TextStyle(
+                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 17),
+          ),
         ),
-        
       ],
     );
   }

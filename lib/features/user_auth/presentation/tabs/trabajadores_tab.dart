@@ -4,17 +4,18 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:moo/features/user_auth/presentation/pages/AddTrabajdor.dart';
 import 'package:moo/features/user_auth/presentation/pages/batches/addBatch.dart';
 import 'package:moo/features/user_auth/presentation/pages/batches/editBatch.dart';
+import 'package:moo/global/common/toast.dart';
 import 'package:moo/services/firebase_service_Farm.dart';
 import 'package:moo/services/firebase_user.dart';
 
-class ProductionTab extends StatefulWidget {
-  const ProductionTab({super.key});
+class TrbajadorTab extends StatefulWidget {
+  const TrbajadorTab({super.key});
 
   @override
-  State<ProductionTab> createState() => _ProductionTabState();
+  State<TrbajadorTab> createState() => _TrbajadorTabState();
 }
 
-class _ProductionTabState extends State<ProductionTab> {
+class _TrbajadorTabState extends State<TrbajadorTab> {
   final currentUser = FirebaseAuth.instance.currentUser!;
   final TextEditingController textController = TextEditingController();
   List<Map<String, dynamic>> allTrabajadores = [];
@@ -33,7 +34,8 @@ class _ProductionTabState extends State<ProductionTab> {
     textController.addListener(() {
       if (!mounted) return; // Verifica si el widget está montado
       setState(() {
-        filteredTrabajadores = filterTrabajadores(allTrabajadores, textController.text);
+        filteredTrabajadores =
+            filterTrabajadores(allTrabajadores, textController.text);
       });
     });
   }
@@ -90,12 +92,21 @@ class _ProductionTabState extends State<ProductionTab> {
                 children: [
                   IconButton(
                     onPressed: () async {
+                      List<Map<String, dynamic>> fincas = await getFincass();
+                      String finca = fincas[0]['uid'];
+
                       await showDialog(
                         context: context,
                         builder: (BuildContext context) {
-                          return const AddBatch();
+                          return AddTrabajador(
+                            finca: finca,
+                            jefe: currentUser.uid,
+                          );
                         },
                       );
+                      setState(() {
+                        obtenerUsuarioYFincas();
+                      });
                       if (!mounted)
                         return; // Verifica si el widget está montado
                       setState(() {});
@@ -113,7 +124,8 @@ class _ProductionTabState extends State<ProductionTab> {
             );
           } else {
             allTrabajadores = snapshot.data!;
-            filteredTrabajadores = filterTrabajadores(allTrabajadores, textController.text);
+            filteredTrabajadores =
+                filterTrabajadores(allTrabajadores, textController.text);
             filteredTrabajadores.sort((a, b) {
               int compareByCantidad =
                   (b['cantidad'] ?? 0).compareTo(a['cantidad'] ?? 0);
@@ -160,10 +172,10 @@ class _ProductionTabState extends State<ProductionTab> {
                       },
                       confirmDismiss: (direction) async {
                         bool result = false;
-                        String nombreLote = trabajador['nombre'];
-                        String? imgLote = trabajador['img'];
-                        String idLote = trabajador['uid'].toString();
-                        int cantidad = trabajador['cantidad'];
+                        String nombreTrabajador = trabajador['nombre'];
+                        String? imgTrabjador = trabajador['img'];
+                        String idTrabajador = trabajador['uid'].toString();
+                        
 
                         if (direction == DismissDirection.startToEnd) {
                           result = false;
@@ -171,9 +183,9 @@ class _ProductionTabState extends State<ProductionTab> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => EditBatch(
-                                nombre: nombreLote,
-                                id: idLote,
-                                img: imgLote,
+                                nombre: nombreTrabajador,
+                                id: idTrabajador,
+                                img: imgTrabjador,
                               ),
                             ),
                           ).then((value) {
@@ -182,7 +194,7 @@ class _ProductionTabState extends State<ProductionTab> {
                             setState(() {});
                           });
                         } else {
-                          if (trabajador['cantidad'] == 0) {
+                          
                             result = await showDialog(
                               context: context,
                               builder: (context) {
@@ -194,7 +206,7 @@ class _ProductionTabState extends State<ProductionTab> {
                                   ),
                                   iconColor: Colors.red,
                                   content: Text(
-                                    '¿Está seguro de eliminar a $nombreLote?',
+                                    '¿Está seguro de eliminar a $nombreTrabajador?',
                                     style: const TextStyle(fontSize: 20),
                                   ),
                                   actions: [
@@ -210,15 +222,16 @@ class _ProductionTabState extends State<ProductionTab> {
                                     ),
                                     TextButton(
                                       onPressed: () async {
-                                        // await deleteBatch(idLote).then((value) {
-                                        //   if (!mounted)
-                                        //     return; // Verifica si el widget está montado
-                                        //   setState(() {});
-                                        // });
-                                        // showToast(
-                                        //     message:
-                                        //         'Lote eliminado exitosamente');
-                                        // Navigator.pop(context, true);
+                                        await deleteUser(idTrabajador).then((value) {
+                                          
+                                          if (!mounted)
+                                            return; // Verifica si el widget está montado
+                                          setState(() {});
+                                        });
+                                        showToast(
+                                            message:
+                                                'Trabajador eliminado exitosamente');
+                                        Navigator.pop(context, true);
                                       },
                                       child: const Text(
                                         'Aceptar',
@@ -230,38 +243,8 @@ class _ProductionTabState extends State<ProductionTab> {
                                 );
                               },
                             );
-                          } else {
-                            result = await showDialog(
-                              context: context,
-                              builder: (context) {
-                                return AlertDialog(
-                                  title: const Icon(
-                                    Icons.info,
-                                    size: 50,
-                                    color: Colors.amber,
-                                  ),
-                                  iconColor: Colors.yellow,
-                                  content: Text(
-                                    'No puedes eliminar el "$nombreLote"\nPorque tiene $cantidad Animales',
-                                    style: const TextStyle(fontSize: 20),
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.pop(context, false);
-                                      },
-                                      child: const Text(
-                                        'OK',
-                                        style: TextStyle(
-                                            color: Colors.blue, fontSize: 20),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          }
-                        }
+                          } 
+                        
                         if (!mounted)
                           return result; // Verifica si el widget está montado
                         setState(() {});
@@ -395,22 +378,18 @@ class _ProductionTabState extends State<ProductionTab> {
                           activeTrackColor: Colors.green,
                           inactiveThumbColor: Colors.white,
                           inactiveTrackColor: Colors.grey,
-                          value: userActive=trabajador['state'],
+                          value: userActive = trabajador['state'],
                           onChanged: (value) async {
-                            
                             setState(() {
                               userActive = value; // Actualiza el valor de parto
-                              
                             });
-                              updateStateUser(trabajador['uid'], userActive);
-                              Fluttertoast.showToast(
-                                msg: 'Trabajador Exitoso...',
-                                backgroundColor: Colors.green,
-                                webPosition: 'left',
-                                fontSize: 20,
-                              );
-                            
-                            
+                            updateStateUser(trabajador['uid'], userActive);
+                            Fluttertoast.showToast(
+                              msg: 'Trabajador Exitoso...',
+                              backgroundColor: Colors.green,
+                              webPosition: 'left',
+                              fontSize: 20,
+                            );
                           },
                         ),
                       ),
@@ -423,7 +402,7 @@ class _ProductionTabState extends State<ProductionTab> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color.fromARGB(255, 17, 63, 8),
+        backgroundColor: const Color.fromARGB(255, 46, 87, 28),
         onPressed: () async {
           List<Map<String, dynamic>> fincas = await getFincass();
           String finca = fincas[0]['uid'];
@@ -449,4 +428,6 @@ class _ProductionTabState extends State<ProductionTab> {
       ),
     );
   }
+
+
 }

@@ -6,6 +6,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:gap/gap.dart';
 import 'package:get/get_utils/get_utils.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -108,6 +109,7 @@ class _AddTrabajadorState extends State<AddTrabajador> {
       String downloadUrl = await referenceImageUpload.getDownloadURL();
       setState(() {
         imageUrl = downloadUrl;
+        
       });
     } catch (e) {
       // Manejo de errores
@@ -125,7 +127,11 @@ class _AddTrabajadorState extends State<AddTrabajador> {
   Widget build(BuildContext context) {
     return AlertDialog(
       scrollable: true,
-      title: const Text('Agregar Trabajador'),
+      title: const Text(
+        'Agregar Trabajador',
+        textAlign: TextAlign.center,
+        style: TextStyle(fontWeight: FontWeight.bold),
+      ),
       content: Container(
         constraints: const BoxConstraints(maxWidth: 400),
         padding: const EdgeInsets.all(16),
@@ -133,40 +139,95 @@ class _AddTrabajadorState extends State<AddTrabajador> {
           key: _formKey,
           child: Column(
             children: [
+              imageUrl!=null ?CircleAvatar(
+                      backgroundColor: Colors.grey.shade200,
+                      radius: 65,
+                      backgroundImage: 
+                          NetworkImage('$imageUrl') 
+                    ):CircleAvatar(radius: 0,),
+                    const Gap(15),
               TextFormField(
-                enableSuggestions: true,
+                style: const TextStyle(fontSize: 20),
+                maxLength: 20,
+                cursorColor: Colors.black,
                 controller: _nombreController,
-                autofocus: true,
-                decoration: const InputDecoration(
-                  labelText: 'Nombre',
-                  hintText: 'Ingrese el nombre del trabajador',
-                ),
+                decoration: InputDecoration(
+                    alignLabelWithHint: true,
+                    labelText: 'nombre',
+                    labelStyle: const TextStyle(fontSize: 20),
+                    hintText: 'ingrese el nombre',
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 1.0, horizontal: 20),
+                    filled: true,
+                    fillColor: Colors.grey.shade300,
+                    floatingLabelStyle:
+                        const TextStyle(color: Colors.black, fontSize: 20),
+                    hintStyle: const TextStyle(color: Colors.grey),
+                    border: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.green),
+                        borderRadius: BorderRadius.circular(100)),
+                    focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.green),
+                        borderRadius: BorderRadius.circular(100))),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Por favor, ingrese el nombre del trabajador';
+                    return 'Por favor, ingrese el nombre';
                   }
+
                   return null;
                 },
               ),
+              const Gap(10),
               TextFormField(
-                enableSuggestions: true,
+                style: const TextStyle(fontSize: 20),
+                maxLength: 20,
+                cursorColor: Colors.black,
                 controller: _apellidoController,
-                decoration: const InputDecoration(
-                  labelText: 'Apellido',
-                  hintText: 'Ingrese el apelido del trabajador',
-                ),
+                decoration: InputDecoration(
+                    alignLabelWithHint: true,
+                    labelText: 'Apellido',
+                    labelStyle: const TextStyle(fontSize: 20),
+                    hintText: 'ingrese el apellido',
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 1.0, horizontal: 20),
+                    filled: true,
+                    fillColor: Colors.grey.shade300,
+                    floatingLabelStyle:
+                        const TextStyle(color: Colors.black, fontSize: 20),
+                    hintStyle: const TextStyle(color: Colors.grey),
+                    border: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.green),
+                        borderRadius: BorderRadius.circular(100)),
+                    focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.green),
+                        borderRadius: BorderRadius.circular(100))),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Por favor, ingrese el apellido del trabajador';
+                    return 'Por favor, ingrese el apellido';
                   }
+
                   return null;
                 },
               ),
+              const Gap(10),
               DropdownSearch<String>(
-                dropdownDecoratorProps: const DropDownDecoratorProps(
+                dropdownDecoratorProps: DropDownDecoratorProps(
                   dropdownSearchDecoration: InputDecoration(
-                    labelText: "sexo",
-                    hintText: "Seleccione un sexo",
+
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 1.0, horizontal: 20),
+                    filled: true,
+                    fillColor: Colors.grey.shade300,
+                    floatingLabelStyle: const TextStyle(color: Colors.black),
+                    hintStyle: const TextStyle(color: Colors.black),
+                    border: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.green),
+                        borderRadius: BorderRadius.circular(100)),
+                    focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.green),
+                        borderRadius: BorderRadius.circular(100)),
+                    labelText: "Sexo",
+                    hintText: "Selecciona un sexo",
                   ),
                 ),
                 items: sexo,
@@ -177,14 +238,15 @@ class _AddTrabajadorState extends State<AddTrabajador> {
                         selectedSexo ?? ''; // Update the controller value
                   });
                 },
-                validator:(value) {
+                validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'seleccione el sexo';
+                    return 'El sexo es obligatoria!';
                   }
                   return null;
                 },
               ),
-              TextField(
+              const Gap(10),
+              TextFormField(
                 decoration: InputDecoration(
                   suffixIcon: IconButton(
                     onPressed: () {
@@ -221,44 +283,94 @@ class _AddTrabajadorState extends State<AddTrabajador> {
                     },
                     icon: const Icon(Icons.calendar_month),
                   ),
+                  contentPadding:
+                      const EdgeInsets.symmetric(vertical: 1.0, horizontal: 20),
+                  filled: true,
+                  fillColor: Colors.grey.shade300,
+                  floatingLabelStyle: const TextStyle(color: Colors.black),
+                  hintStyle: const TextStyle(color: Colors.black),
+                  border: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.green),
+                      borderRadius: BorderRadius.circular(100)),
+                  focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.green),
+                      borderRadius: BorderRadius.circular(100)),
+                  labelText: "Fecha de nacimiento",
                 ),
                 readOnly: true,
                 controller: _fechaController,
                 keyboardType: TextInputType.datetime,
               ),
+              const Gap(20),
               TextFormField(
                 keyboardType: TextInputType.emailAddress,
-                enableSuggestions: true,
+                style: const TextStyle(fontSize: 20),
+                maxLength: 50,
+                cursorColor: Colors.black,
                 controller: _emailController,
-                decoration: const InputDecoration(
-                  labelText: 'email',
-                  hintText: 'Ingrese el email',
-                ),
+                decoration: InputDecoration(
+                    alignLabelWithHint: true,
+                    labelText: 'email',
+                    labelStyle: const TextStyle(fontSize: 20),
+                    hintText: 'ingrese el email',
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 1.0, horizontal: 20),
+                    filled: true,
+                    fillColor: Colors.grey.shade300,
+                    floatingLabelStyle:
+                        const TextStyle(color: Colors.black, fontSize: 20),
+                    hintStyle: const TextStyle(color: Colors.grey),
+                    border: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.green),
+                        borderRadius: BorderRadius.circular(100)),
+                    focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.green),
+                        borderRadius: BorderRadius.circular(100))),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Por favor, ingrese el email';
                   }
+
                   return null;
                 },
               ),
+              const Gap(10),
               TextFormField(
                 keyboardType: TextInputType.phone,
-                
+                style: const TextStyle(fontSize: 20),
+                maxLength: 15,
+                cursorColor: Colors.black,
                 controller: _telefonoController,
-                decoration: const InputDecoration(
-                  labelText: 'telefono',
-                  hintText: 'Ingrese el telefono',
-                ),
+                decoration: InputDecoration(
+                    alignLabelWithHint: true,
+                    labelText: 'telefono',
+                    labelStyle: const TextStyle(fontSize: 20),
+                    hintText: 'ingrese el telefono',
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 1.0, horizontal: 20),
+                    filled: true,
+                    fillColor: Colors.grey.shade300,
+                    floatingLabelStyle:
+                        const TextStyle(color: Colors.black, fontSize: 20),
+                    hintStyle: const TextStyle(color: Colors.grey),
+                    border: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.green),
+                        borderRadius: BorderRadius.circular(100)),
+                    focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.green),
+                        borderRadius: BorderRadius.circular(100))),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Por favor, ingrese el email';
+                    return 'Por favor, ingrese el telefono';
                   }
+
                   return null;
                 },
               ),
+              const Gap(10),
               IconButton(
                 onPressed: _selectImageSource,
-                icon: const Icon(Icons.add_photo_alternate),
+                icon: const Icon(Icons.add_photo_alternate,size: 35,),
               ),
             ],
           ),
@@ -269,7 +381,11 @@ class _AddTrabajadorState extends State<AddTrabajador> {
           onPressed: () async {
             Navigator.pop(context);
           },
-          child: const Text('Cancelar'),
+          child: const Text(
+            'Cancelar',
+            style: TextStyle(
+                color: Colors.grey, fontWeight: FontWeight.bold, fontSize: 17),
+          ),
         ),
         
         ElevatedButton(
@@ -284,7 +400,12 @@ class _AddTrabajadorState extends State<AddTrabajador> {
               
             }
           },
-          child: const Text('Guardar'),
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.limeAccent),
+          child: const Text(
+            'Guardar',
+            style: TextStyle(
+                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 17),
+          ),
         ),
       ],
     );
@@ -333,7 +454,8 @@ class _AddTrabajadorState extends State<AddTrabajador> {
       fechaNacimiento, 
       _sexoController.text,
       widget.finca,
-      'trabajador'
+      'trabajador',
+      imageUrl
       ).then((_){
         setState(() {
           Navigator.pop(context);

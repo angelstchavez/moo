@@ -15,6 +15,7 @@ import 'package:moo/features/user_auth/presentation/pages/batches/batch_page.dar
 import 'package:moo/global/common/toast.dart';
 import 'package:moo/services/firebase_service_Animal.dart';
 import 'package:moo/services/firebase_service_Batch.dart';
+//import 'package:flutter_animated_dialog/flutter_animated_dialog.dart';
 
 class ContentBatch extends StatefulWidget {
   final String nombre;
@@ -63,14 +64,13 @@ class _ContentBatchState extends State<ContentBatch> {
   @override
   void initState() {
     super.initState();
-    
+
     loadData(); // Método para cargar los datos al abrir la página
     textController.addListener(() {
       setState(() {
         filteredAnimals = filterAnimals(allAnimals, textController.text);
       });
     });
-    
   }
 
   double? h;
@@ -113,7 +113,7 @@ class _ContentBatchState extends State<ContentBatch> {
             child: Column(
               children: [
                 Card(
-                  color: Colors.brown.shade400,
+                  color: Colors.lightGreen,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
@@ -165,13 +165,13 @@ class _ContentBatchState extends State<ContentBatch> {
                       children: [
                         IconButton(
                           onPressed: () async {
-                            await showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return const AddBatch();
-                              },
-                            );
-                            setState(() {});
+                            // await showDialog(
+                            //   context: context,
+                            //   builder: (BuildContext context) {
+                            //     return const AddBatch();
+                            //   },
+                            // );
+                            // setState(() {});
                           },
                           icon: const Icon(Icons.add),
                           iconSize: 70,
@@ -238,6 +238,7 @@ class _ContentBatchState extends State<ContentBatch> {
                               confirmDismiss: (direction) async {
                                 bool result = false;
                                 String nombreAnimal = animal['nombre'];
+                                String razaAnimal = animal['raza'];
                                 bool partoAnimal = animal['esMadre'];
                                 String? imgAnimal = animal['img'];
                                 String idAnimal = animal['uid'].toString();
@@ -250,6 +251,7 @@ class _ContentBatchState extends State<ContentBatch> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => EditAnimal(
+                                              raza: razaAnimal,
                                               fechaN: fechaAnimal,
                                               nombre: nombreAnimal,
                                               id: idAnimal,
@@ -326,6 +328,8 @@ class _ContentBatchState extends State<ContentBatch> {
                                 onTap: () async {
                                   String nombreAnimal =
                                       filteredAnimals[index]["nombre"];
+                                  String razaAnimal =
+                                      filteredAnimals[index]["raza"];
                                   String? imgAnimal =
                                       filteredAnimals[index]["img"];
                                   String idAnimal =
@@ -373,6 +377,7 @@ class _ContentBatchState extends State<ContentBatch> {
                                                   MaterialPageRoute(
                                                       builder: (context) =>
                                                           EditAnimal(
+                                                            raza: razaAnimal,
                                                             fechaN: fechaAnimal,
                                                             nombre:
                                                                 nombreAnimal,
@@ -425,9 +430,10 @@ class _ContentBatchState extends State<ContentBatch> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color.fromARGB(255, 201, 143, 122),
+        backgroundColor: const Color.fromARGB(255, 46, 87, 28),
         onPressed: () async {
           await showDialog(
+            
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
@@ -442,6 +448,7 @@ class _ContentBatchState extends State<ContentBatch> {
                         Navigator.pop(context); // Cerrar el diálogo
                         showDialog(
                           context: context,
+                          barrierDismissible: true,
                           builder: (BuildContext context) {
                             return AddAnimal(
                               lote: widget.id,
@@ -449,6 +456,7 @@ class _ContentBatchState extends State<ContentBatch> {
                               dataLength: dataLength,
                             );
                           },
+                          
                         ).then((value) {
                           setState(() {
                             loadData();
@@ -463,7 +471,10 @@ class _ContentBatchState extends State<ContentBatch> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>  NovillaPage(idLote: widget.id,nombreLote: widget.nombre,)),
+                              builder: (context) => NovillaPage(
+                                    idLote: widget.id,
+                                    nombreLote: widget.nombre,
+                                  )),
                         ).then((value) => setState(() {
                               Navigator.pop(context);
                             }));

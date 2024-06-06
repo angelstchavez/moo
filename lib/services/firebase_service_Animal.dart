@@ -66,6 +66,60 @@ Future<List<Map<String, dynamic>>> getVacasByLote(String lote) async {
 
   return animales;
 }
+Future<List<Map<String, dynamic>>> getTernerosByVaca(String madre) async {
+  List<Map<String, dynamic>> animales = [];
+  // Obtener referencia a la colección de lotes
+  CollectionReference collectionReferenceAnimales = db.collection("animales");
+
+  // Realizar la consulta filtrando por el campo 'lote' y 'state'
+  QuerySnapshot queryVacas = await collectionReferenceAnimales
+      .where('idMadre', isEqualTo: madre)
+      
+
+      .where('state', isEqualTo: true)
+      .get();
+
+  DateTime now = DateTime.now();
+
+  for (DocumentSnapshot documento in queryVacas.docs) {
+    final Map<String, dynamic> data = documento.data() as Map<String, dynamic>;
+    DateTime fechaNacimiento = DateFormat('yyyy-M-d').parse(data['fecha']);
+    int edad = now.difference(fechaNacimiento).inDays ~/ 365;
+
+    
+     
+    
+    
+
+    
+      final animal = {
+        'uid': documento.id,
+        'nombre': data['nombre'],
+        'raza': data['raza'],
+        'sexo': data['sexo'],
+        'fecha': data['fecha'],
+        'produccion': data['produccion'],
+        'user': data['user'],
+        'finca': data['finca'],
+        'lote': data['lote'],
+        'img': data['img'],
+        'state': data['state'],
+        'parto': data['parto'],
+        'esMadre': data['esMadre'],
+        'idMadre':data['idMadre'],
+        
+        
+        'edad': edad,
+      };
+      animales.add(animal);
+    
+  }
+
+  // Simular un pequeño retraso antes de devolver los lotes
+  await Future.delayed(const Duration(milliseconds: 5));
+
+  return animales;
+}
 Future<List<Map<String, dynamic>>> getVacasByFinca(String finca) async {
   List<Map<String, dynamic>> animales = [];
   // Obtener referencia a la colección de lotes
@@ -75,6 +129,7 @@ Future<List<Map<String, dynamic>>> getVacasByFinca(String finca) async {
   QuerySnapshot queryVacas = await collectionReferenceAnimales
       .where('finca', isEqualTo: finca)
       .where('Sexo', isEqualTo: 'Hembra')
+      .where('parto', isEqualTo: true)
       //.orderBy('produccion',descending: true)
      
       .where('state', isEqualTo: true)
@@ -248,7 +303,7 @@ Future<void> addAnimal(String nombre, String raza, DateTime fecha,String lote,St
     'nombre': nombre,
       'raza': raza,
       'fecha':formattedDate,
-      'produccion': null,
+      'produccion': 0,
       //"Referencias"
       'user': currentUser.uid,
       'finca': finca,
@@ -289,9 +344,10 @@ Future<void> addTernero(String nombre, String raza,String finca,String? image,St
 
 
 
-Future<void> updateAnimal(String uid, String newNombre, ) async {
+Future<void> updateAnimal(String uid, String newNombre,String newRaza ) async {
   await db.collection('animales').doc(uid).update({
     'nombre': newNombre,
+    'raza': newRaza,
     
   });
 }

@@ -120,15 +120,15 @@ class _NovillaPageState extends State<NovillaPage> {
                 children: [
                   IconButton(
                     onPressed: () async {
-                      await showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return const AddBatch();
-                        },
-                      );
-                      if (!mounted)
-                        return; // Verifica si el widget está montado
-                      setState(() {});
+                      // await showDialog(
+                      //   context: context,
+                      //   builder: (BuildContext context) {
+                      //     return const AddBatch();
+                      //   },
+                      // );
+                      // if (!mounted)
+                      //   return; // Verifica si el widget está montado
+                      // setState(() {});
                     },
                     icon: const Icon(Icons.add),
                     iconSize: 70,
@@ -369,24 +369,24 @@ class _NovillaPageState extends State<NovillaPage> {
           }
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color.fromARGB(255, 201, 143, 122),
-        onPressed: () async {
-          await showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return const AddBatch();
-            },
-          ).then((value) {
-            if (!mounted) return; // Verifica si el widget está montado
-            setState(() {});
-          });
-        },
-        child: const Icon(
-          Icons.add,
-          color: Colors.white,
-        ),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   backgroundColor: const Color.fromARGB(255, 201, 143, 122),
+      //   onPressed: () async {
+      //     await showDialog(
+      //       context: context,
+      //       builder: (BuildContext context) {
+      //         return const AddBatch();
+      //       },
+      //     ).then((value) {
+      //       if (!mounted) return; // Verifica si el widget está montado
+      //       setState(() {});
+      //     });
+      //   },
+      //   child: const Icon(
+      //     Icons.add,
+      //     color: Colors.white,
+      //   ),
+      // ),
     );
   }
 }

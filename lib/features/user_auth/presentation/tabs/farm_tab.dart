@@ -57,7 +57,7 @@ class _FarmTabState extends State<FarmTab> {
                 return Center(
                   child: SizedBox(
                     width: MediaQuery.of(context).size.width,
-                    height: 170,
+                    height: 120,
                     child: Card(
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -73,14 +73,8 @@ class _FarmTabState extends State<FarmTab> {
                               'Tamaño: ${fincas[index]['tamano']} Hectareas',
                               style: const TextStyle(fontSize: 18.0),
                             ),
-                            Text(
-                              'Propietario: ${currentUser.displayName?.capitalize ?? ''}',
-                              style: const TextStyle(fontSize: 18.0),
-                            ),
-                            Text(
-                              'Email: ${currentUser.email} ',
-                              style: const TextStyle(fontSize: 18.0),
-                            ),
+                            
+                            
                             
                           ],
                         ),

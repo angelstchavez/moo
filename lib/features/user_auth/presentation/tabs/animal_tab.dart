@@ -82,6 +82,9 @@ class _AnimalTabState extends State<AnimalTab> {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
+          }
+          if (snapshot.data == null || (snapshot.data as List).isEmpty||snapshot.data!.length < 3) {
+            return const Center(child: Text('No hay ranking '),);
           } else if (snapshot.hasData) {
             // Ordenar la lista por producción descendente
             snapshot.data!
@@ -130,8 +133,11 @@ class _AnimalTabState extends State<AnimalTab> {
                             const Positioned(
                               bottom: 3,
                               right: 1,
-                              child: Image(image: AssetImage('assets/icon/2st.png',),),
-                                  
+                              child: Image(
+                                image: AssetImage(
+                                  'assets/icon/2st.png',
+                                ),
+                              ),
                             ),
                           ],
                         ),
@@ -181,8 +187,11 @@ class _AnimalTabState extends State<AnimalTab> {
                             const Positioned(
                               bottom: 3,
                               right: 1,
-                              child: Image(image: AssetImage('assets/icon/1st.png',),),
-                                  
+                              child: Image(
+                                image: AssetImage(
+                                  'assets/icon/1st.png',
+                                ),
+                              ),
                             ),
                           ],
                         ),
@@ -197,7 +206,7 @@ class _AnimalTabState extends State<AnimalTab> {
                     child: SizedBox(
                       height: 300, // Ajuste de la altura
                       child: Card(
-                        color:  Color.fromARGB(127, 201, 80, 36),
+                        color: Color.fromARGB(127, 201, 80, 36),
                         elevation: 5,
                         child: Stack(
                           children: [
@@ -232,8 +241,11 @@ class _AnimalTabState extends State<AnimalTab> {
                             const Positioned(
                               bottom: 3,
                               right: 1,
-                              child: Image(image: AssetImage('assets/icon/3st.png',),),
-                                  
+                              child: Image(
+                                image: AssetImage(
+                                  'assets/icon/3st.png',
+                                ),
+                              ),
                             ),
                           ],
                         ),

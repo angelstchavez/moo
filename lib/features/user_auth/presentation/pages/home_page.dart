@@ -29,24 +29,24 @@ class _HomePageState extends State<HomePage> {
     if (currentUser.displayName == 'trabajador') {
       tabs = const [
         TabWidget(iconPath: "assets/icon/granja.png"),
-        TabWidget(iconPath: "assets/icon/valla.png"),
+        //TabWidget(iconPath: "assets/icon/valla.png"),
       ];
       tabViews = const [
         FarmTab(),
-        BatchTab(),
+        //BatchTab(),
       ];
     } else {
       tabs = const [
         TabWidget(iconPath: "assets/icon/granja.png"),
-        TabWidget(iconPath: "assets/icon/valla.png"),
+        //TabWidget(iconPath: "assets/icon/valla.png"),
         TabWidget(iconPath: "assets/icon/vaca.png"),
         TabWidget(iconPath: "assets/icon/granjero.png"),
       ];
       tabViews = const [
         FarmTab(),
-        BatchTab(),
+        //BatchTab(),
         AnimalTab(),
-        ProductionTab(),
+        TrbajadorTab(),
       ];
     }
   }
@@ -55,8 +55,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: tabs.length,
-      child: WillPopScope(  // Corrected from PopScope
-        onWillPop: () async => false,
+      child: PopScope(  // Corrected from PopScope
+        canPop: false,
         child: Scaffold(
           body: SafeArea(
             child: Padding(
