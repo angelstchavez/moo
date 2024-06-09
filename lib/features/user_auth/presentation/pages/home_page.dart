@@ -4,8 +4,10 @@ import 'package:intl/intl.dart';
 import 'package:moo/features/user_auth/presentation/tabs/animal_tab.dart';
 import 'package:moo/features/user_auth/presentation/tabs/batch_tab.dart';
 import 'package:moo/features/user_auth/presentation/tabs/farm_tab.dart';
+
 import 'package:moo/features/user_auth/presentation/tabs/trabajadores_tab.dart';
 import 'package:moo/features/user_auth/presentation/widgets/tab_widget.dart';
+import 'package:moo/services/firebase_user.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -19,11 +21,13 @@ class _HomePageState extends State<HomePage> {
 
   late List<Widget> tabs;
   late List<Widget> tabViews;
+  String? img;
+  String? nombre;
 
   @override
   void initState() {
+    _loadUserData();
     super.initState();
-    
 
     // Define tabs and tab views based on the displayName
     if (currentUser.displayName == 'trabajador') {
@@ -46,8 +50,24 @@ class _HomePageState extends State<HomePage> {
         FarmTab(),
         //BatchTab(),
         AnimalTab(),
-        TrbajadorTab(),
+        TrabajadorTab(),
       ];
+    }
+  }
+  
+  Future<void> _loadUserData() async {
+    try {
+      List<Map<String, dynamic>> users = await getUserByUser();
+      if (users.isNotEmpty) {
+        setState(() {
+          img = users[0]['img'];
+          nombre = users[0]['nombre'];
+          
+        });
+      }
+    } catch (e) {
+      // Handle error
+      print('Error loading user data: $e');
     }
   }
 
@@ -70,8 +90,13 @@ class _HomePageState extends State<HomePage> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                            CircleAvatar(
+                              radius: 40,
+                            backgroundImage: img != null ? NetworkImage(img!) : null,
+                            child: img == null ? Icon(Icons.person) : null,
+                          ),
                           Text(
-                            "Hola, ${currentUser.displayName}!",
+                            "Hola, $nombre",
                             style: const TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.bold,

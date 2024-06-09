@@ -182,6 +182,7 @@ class _ContentAnimalState extends State<ContentAnimal> {
                           children: [
                             Card(
                               child: Dismissible(
+                                
                                 background: Container(
                                   color: Colors.blue,
                                   alignment: AlignmentDirectional.centerStart,

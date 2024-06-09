@@ -230,7 +230,8 @@ class _EditAnimalState extends State<EditAnimal> {
                     )
                   : const CircleAvatar(
                       radius: 100, // Ajusta la altura deseada aquí
-                      backgroundImage:  NetworkImage('https://acortar.link/hrux2P'),
+                      backgroundImage:
+                          NetworkImage('https://acortar.link/hrux2P'),
                     ),
               const Gap(16),
               Card(

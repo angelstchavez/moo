@@ -393,38 +393,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     const Gap(20),
                     const Gap(20),
-                    isEditing == true
-                        ? ElevatedButton(
-                            style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(
-                                  Colors.green.shade800),
-                            ),
-                            onPressed: () async {
-                              if (_formKey.currentState!.validate()) {
-                                await updateUser(
-                                        id,
-                                        _nameController.text,
-                                        _apellidoController.text,
-                                        _phoneController.text.trim(),
-                                        )
-                                    .then((_) {
-                                  setState(() {
-                                    _loadUserData();
-                                  });
-                                  showToast(
-                                      message:
-                                          'Usuario Actualizado con exito!!!');
-                                });
-                              }
-                            },
-                            child: const Text(
-                              'ACTUALIZAR',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.bold),
-                            ))
-                        : const Text(''),
+                    
                   ],
                 ),
                 const Divider(

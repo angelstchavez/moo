@@ -14,12 +14,22 @@ class FarmTab extends StatefulWidget {
 class _FarmTabState extends State<FarmTab> {
   final currentUser = FirebaseAuth.instance.currentUser!;
   Future<List<Map<String, dynamic>>>? _fincasFuture;
+  String? fincaNombre;
 
   @override
   void initState() {
     super.initState();
     _fincasFuture = obtenerUsuarioYFincas();
   }
+  
+  @override
+  void dispose() {
+    fincaNombre;
+    super.dispose();
+    
+  }
+  
+
 
   Future<List<Map<String, dynamic>>> obtenerUsuarioYFincas() async {
     // Obtener la información del usuario
@@ -52,9 +62,13 @@ class _FarmTabState extends State<FarmTab> {
           } else {
             final fincas = snapshot.data!;
             return ListView.builder(
+
               itemCount: fincas.length,
               itemBuilder: (context, index) {
+                fincaNombre=fincas[index]['nombre'].toString().capitalize;
+
                 return Center(
+                  
                   child: SizedBox(
                     width: MediaQuery.of(context).size.width,
                     height: 120,
@@ -66,7 +80,7 @@ class _FarmTabState extends State<FarmTab> {
                           children: [
                             const Icon(Icons.home_outlined),
                             Text(
-                              'Finca: ${fincas[index]['nombre'].toString().capitalize}',
+                              'Finca: $fincaNombre',
                               style: const TextStyle(fontSize: 18.0),
                             ),
                             Text(
