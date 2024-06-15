@@ -165,13 +165,60 @@ class _ContentBatchState extends State<ContentBatch> {
                       children: [
                         IconButton(
                           onPressed: () async {
-                            // await showDialog(
-                            //   context: context,
-                            //   builder: (BuildContext context) {
-                            //     return const AddBatch();
-                            //   },
-                            // );
-                            // setState(() {});
+                            await showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Selecciona una opción'),
+                                  content: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      ListTile(
+                                        leading: const Icon(Icons.add),
+                                        title: const Text('Añadir Animal'),
+                                        onTap: () {
+                                          Navigator.pop(
+                                              context); // Cerrar el diálogo
+                                          showDialog(
+                                            context: context,
+                                            barrierDismissible: true,
+                                            builder: (BuildContext context) {
+                                              return AddAnimal(
+                                                lote: widget.id,
+                                                finca: widget.finca,
+                                                dataLength: dataLength,
+                                              );
+                                            },
+                                          ).then((value) {
+                                            setState(() {
+                                              loadData();
+                                            });
+                                          });
+                                        },
+                                      ),
+                                      ListTile(
+                                        leading: const Icon(Icons.select_all),
+                                        title:
+                                            const Text('Seleccionar Novilla'),
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    NovillaPage(
+                                                      idLote: widget.id,
+                                                      nombreLote: widget.nombre,
+                                                    )),
+                                          ).then((value) => setState(() {
+                                                Navigator.pop(context);
+                                              }));
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            );
                           },
                           icon: const Icon(Icons.add),
                           iconSize: 70,
@@ -433,7 +480,6 @@ class _ContentBatchState extends State<ContentBatch> {
         backgroundColor: const Color.fromARGB(255, 46, 87, 28),
         onPressed: () async {
           await showDialog(
-            
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
@@ -456,7 +502,6 @@ class _ContentBatchState extends State<ContentBatch> {
                               dataLength: dataLength,
                             );
                           },
-                          
                         ).then((value) {
                           setState(() {
                             loadData();

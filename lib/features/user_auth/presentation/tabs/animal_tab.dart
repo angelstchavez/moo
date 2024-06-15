@@ -83,174 +83,183 @@ class _AnimalTabState extends State<AnimalTab> {
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           }
-          if (snapshot.data == null || (snapshot.data as List).isEmpty||snapshot.data!.length < 3) {
+          if (snapshot.data == null || (snapshot.data as List).isEmpty || snapshot.data!.length < 3) {
             return const Center(child: Text('No hay ranking '),);
           } else if (snapshot.hasData) {
             // Ordenar la lista por producción descendente
-            snapshot.data!
-                .sort((a, b) => b['produccion'].compareTo(a['produccion']));
-            return Row(
+            snapshot.data!.sort((a, b) => b['produccion'].compareTo(a['produccion']));
+            return Column(
               children: [
-                Expanded(
-                  flex: 3,
-                  child: AspectRatio(
-                    aspectRatio: 0.8,
-                    child: SizedBox(
-                      height: 300, // Ajuste de la altura
-                      child: Card(
-                        color: Colors.blueGrey.shade100,
-                        elevation: 5,
-                        child: Stack(
-                          children: [
-                            Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  CircleAvatar(
-                                    radius: 30,
-                                    backgroundImage:
-                                        snapshot.data![1]['img'] != null
-                                            ? NetworkImage(
-                                                '${snapshot.data![1]['img']}')
-                                            : const NetworkImage(
-                                                'https://acortar.link/m8RozS'),
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 3,
+                      child: AspectRatio(
+                        aspectRatio: 0.8,
+                        child: SizedBox(
+                          height: 300, // Ajuste de la altura
+                          child: Card(
+                            color: Colors.blueGrey.shade100,
+                            elevation: 5,
+                            child: Stack(
+                              children: [
+                                Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 30,
+                                        backgroundImage: snapshot.data![1]['img'] != null
+                                            ? NetworkImage('${snapshot.data![1]['img']}')
+                                            : const NetworkImage('https://acortar.link/m8RozS'),
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Text(
+                                        snapshot.data![1]['nombre'],
+                                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                      ),
+                                      const SizedBox(height: 5),
+                                      Text(
+                                        '${snapshot.data![1]['produccion'].toString() ?? ''} Litros',
+                                        style: const TextStyle(fontSize: 16),
+                                      ),
+                                    ],
                                   ),
-                                  const SizedBox(height: 10),
-                                  Text(
-                                    snapshot.data![1]['nombre'],
-                                    style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  const SizedBox(height: 5),
-                                  Text(
-                                    '${snapshot.data![1]['produccion'].toString() ?? ''} Litros',
-                                    style: const TextStyle(fontSize: 16),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const Positioned(
-                              bottom: 3,
-                              right: 1,
-                              child: Image(
-                                image: AssetImage(
-                                  'assets/icon/2st.png',
                                 ),
-                              ),
+                                const Positioned(
+                                  bottom: 3,
+                                  right: 1,
+                                  child: Image(
+                                    image: AssetImage('assets/icon/2st.png'),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
+                    Expanded(
+                      flex: 4,
+                      child: AspectRatio(
+                        aspectRatio: 0.8,
+                        child: SizedBox(
+                          height: 300, // Ajuste de la altura
+                          child: Card(
+                            color: const Color.fromARGB(209, 255, 214, 64),
+                            elevation: 5,
+                            child: Stack(
+                              children: [
+                                Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 40,
+                                        backgroundImage: snapshot.data![0]['img'] != null
+                                            ? NetworkImage('${snapshot.data![0]['img']}')
+                                            : const NetworkImage('https://acortar.link/m8RozS'),
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Text(
+                                        snapshot.data![0]['nombre'],
+                                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                      ),
+                                      const SizedBox(height: 5),
+                                      Text(
+                                        '${snapshot.data![0]['produccion'].toString() ?? ''} Litros',
+                                        style: const TextStyle(fontSize: 16),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const Positioned(
+                                  bottom: 3,
+                                  right: 1,
+                                  child: Image(
+                                    image: AssetImage('assets/icon/1st.png'),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 3,
+                      child: AspectRatio(
+                        aspectRatio: 0.8,
+                        child: SizedBox(
+                          height: 300, // Ajuste de la altura
+                          child: Card(
+                            color: const Color.fromARGB(127, 201, 80, 36),
+                            elevation: 5,
+                            child: Stack(
+                              children: [
+                                Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 30,
+                                        backgroundImage: snapshot.data![2]['img'] != null
+                                            ? NetworkImage('${snapshot.data![2]['img']}')
+                                            : const NetworkImage('https://acortar.link/m8RozS'),
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Text(
+                                        snapshot.data![2]['nombre'],
+                                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                      ),
+                                      const SizedBox(height: 5),
+                                      Text(
+                                        '${snapshot.data![2]['produccion'].toString() ?? ''} Litros',
+                                        style: const TextStyle(fontSize: 16),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const Positioned(
+                                  bottom: 3,
+                                  right: 1,
+                                  child: Image(
+                                    image: AssetImage('assets/icon/3st.png'),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 Expanded(
-                  flex: 4,
-                  child: AspectRatio(
-                    aspectRatio: 0.8,
-                    child: SizedBox(
-                      height: 300, // Ajuste de la altura
-                      child: Card(
-                        color: Color.fromARGB(209, 255, 214, 64),
-                        elevation: 5,
-                        child: Stack(
-                          children: [
-                            Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  CircleAvatar(
-                                    radius: 40,
-                                    backgroundImage:
-                                        snapshot.data![0]['img'] != null
-                                            ? NetworkImage(
-                                                '${snapshot.data![0]['img']}')
-                                            : const NetworkImage(
-                                                'https://acortar.link/m8RozS'),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  Text(
-                                    snapshot.data![0]['nombre'],
-                                    style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  const SizedBox(height: 5),
-                                  Text(
-                                    '${snapshot.data![0]['produccion'].toString() ?? ''} Litros',
-                                    style: const TextStyle(fontSize: 16),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const Positioned(
-                              bottom: 3,
-                              right: 1,
-                              child: Image(
-                                image: AssetImage(
-                                  'assets/icon/1st.png',
-                                ),
-                              ),
-                            ),
-                          ],
+                  child: ListView.builder(
+                    itemCount: snapshot.data!.length - 3,
+                    itemBuilder: (context, index) {
+                      final item = snapshot.data![index + 3];
+                      return Card(
+                        color: Colors.grey.shade200,
+                        shadowColor: Colors.green,
+                        child: ListTile(
+                          
+                          leading: CircleAvatar(
+                            radius: 30,
+                            backgroundImage: item['img'] != null
+                                ? NetworkImage('${item['img']}')
+                                : const NetworkImage('https://acortar.link/m8RozS'),
+                          ),
+                          title: Text(item['nombre'],style: const TextStyle(fontWeight: FontWeight.bold),),
+                          subtitle: Text('${item['produccion'].toString() ?? ''} Litros'),
+                          trailing: Text(
+                            '${index + 4} puesto', // Añadir la enumeración aquí
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 3,
-                  child: AspectRatio(
-                    aspectRatio: 0.8,
-                    child: SizedBox(
-                      height: 300, // Ajuste de la altura
-                      child: Card(
-                        color: Color.fromARGB(127, 201, 80, 36),
-                        elevation: 5,
-                        child: Stack(
-                          children: [
-                            Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  CircleAvatar(
-                                    radius: 30,
-                                    backgroundImage:
-                                        snapshot.data![2]['img'] != null
-                                            ? NetworkImage(
-                                                '${snapshot.data![2]['img']}')
-                                            : const NetworkImage(
-                                                'https://acortar.link/m8RozS'),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  Text(
-                                    snapshot.data![2]['nombre'],
-                                    style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  const SizedBox(height: 5),
-                                  Text(
-                                    '${snapshot.data![2]['produccion'].toString() ?? ''} Litros',
-                                    style: const TextStyle(fontSize: 16),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const Positioned(
-                              bottom: 3,
-                              right: 1,
-                              child: Image(
-                                image: AssetImage(
-                                  'assets/icon/3st.png',
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                      );
+                    },
                   ),
                 ),
               ],

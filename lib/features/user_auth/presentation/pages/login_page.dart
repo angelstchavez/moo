@@ -4,11 +4,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:gap/gap.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/get_navigation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:moo/features/user_auth/firebase_auth_implementation/firebase_auth_services.dart';
 import 'package:moo/features/user_auth/presentation/pages/home_page.dart';
 import 'package:moo/features/user_auth/presentation/pages/reset_password_page.dart';
+import 'package:moo/features/user_auth/presentation/pages/signInGoogle.dart';
 import 'package:moo/features/user_auth/presentation/pages/sign_up_page.dart';
 import 'package:moo/features/user_auth/presentation/widgets/form_container_widget.dart';
 import 'package:moo/features/user_auth/presentation/widgets/navigation_bar.dart';
@@ -193,11 +196,11 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(
                       width: 15,
                     ),
-                    GestureDetector(
-                      onTap: _signInWithFacebook,
-                      child: const SquareTitleWidget(
-                          imagePath: "assets/icon/facebook.png"),
-                    ),
+                    // GestureDetector(
+                    //   onTap: _signInWithFacebook,
+                    //   child: const SquareTitleWidget(
+                    //       imagePath: "assets/icon/facebook.png"),
+                    // ),
                   ],
                 ),
                 const SizedBox(
@@ -255,7 +258,8 @@ class _LoginPageState extends State<LoginPage> {
       if (user != null) {
         final currentUser = FirebaseAuth.instance.currentUser!;
         // Verificar el estado del usuario en Firestore
-        List<Map<String, dynamic>> usuarios = await getUserById(currentUser.uid);
+        List<Map<String, dynamic>> usuarios =
+            await getUserById(currentUser.uid);
         if (usuarios.isNotEmpty) {
           if (!mounted) return; // Verifica si el widget está montado
           setState(() {
@@ -267,7 +271,7 @@ class _LoginPageState extends State<LoginPage> {
           showToast(message: "Inicio de sesión exitoso");
           Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (builder) => const NavBar()),
+            MaterialPageRoute(builder: (builder) =>  NavBar()),
             (route) => false,
           );
         } else {
@@ -288,6 +292,7 @@ class _LoginPageState extends State<LoginPage> {
 
   void _signInWithGoogle() async {
     final GoogleSignIn googleSignIn = GoogleSignIn();
+    final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
     try {
       final GoogleSignInAccount? googleSignInAccount =
@@ -297,27 +302,22 @@ class _LoginPageState extends State<LoginPage> {
         final GoogleSignInAuthentication googleSignInAuthentication =
             await googleSignInAccount.authentication;
 
-        final AuthCredential credential = GoogleAuthProvider.credential(
-          idToken: googleSignInAuthentication.idToken,
-          accessToken: googleSignInAuthentication.accessToken,
-        );
+        if (googleSignInAuthentication.idToken != null &&
+            googleSignInAuthentication.accessToken != null) {
+          final AuthCredential credential = GoogleAuthProvider.credential(
+            idToken: googleSignInAuthentication.idToken,
+            accessToken: googleSignInAuthentication.accessToken,
+          );
 
-        UserCredential userCredential =
-            await _firebaseAuth.signInWithCredential(credential);
+          UserCredential userCredential =
+              await _firebaseAuth.signInWithCredential(credential);
 
-        // Verificar el estado del usuario en Firestore
-        DocumentSnapshot userDoc = await _firestore
-            .collection('usuarios')
-            .doc(userCredential.user?.uid)
-            .get();
-
-        if (userDoc.exists &&
-            userDoc.data() != null &&
-            userDoc['state'] == true) {
-          Navigator.pushNamed(context, "/home");
+          // Aquí se obtiene el usuario por email después de autenticarse
+          
+              Get.to(()=> NavBar(email: '${userCredential.user?.email}',id: '${userCredential.user?.uid}',));
+          
         } else {
-          showToast(message: "Usuario inactivo. Contacta al administrador.");
-          await _firebaseAuth.signOut(); // Cerrar sesión del usuario inactivo
+          showToast(message: "Error al obtener token de Google.");
         }
       }
     } catch (e) {
@@ -325,41 +325,41 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  void _signInWithFacebook() async {
-    try {
-      // Inicia sesión con Facebook
-      final LoginResult result = await FacebookAuth.instance.login();
+  // void _signInWithFacebook() async {
+  //   try {
+  //     // Inicia sesión con Facebook
+  //     final LoginResult result = await FacebookAuth.instance.login();
 
-      if (result.status == LoginStatus.success) {
-        final OAuthCredential credential =
-            FacebookAuthProvider.credential(result.accessToken!.token);
+  //     if (result.status == LoginStatus.success) {
+  //       final OAuthCredential credential =
+  //           FacebookAuthProvider.credential(result.accessToken!.token);
 
-        UserCredential userCredential =
-            await _firebaseAuth.signInWithCredential(credential);
+  //       UserCredential userCredential =
+  //           await _firebaseAuth.signInWithCredential(credential);
 
-        // Verificar el estado del usuario en Firestore
-        DocumentSnapshot userDoc = await _firestore
-            .collection('usuarios')
-            .doc(userCredential.user?.uid)
-            .get();
+  //       // Verificar el estado del usuario en Firestore
+  //       DocumentSnapshot userDoc = await _firestore
+  //           .collection('usuarios')
+  //           .doc(userCredential.user?.uid)
+  //           .get();
 
-        if (userDoc.exists &&
-            userDoc.data() != null &&
-            userDoc['state'] == true) {
-          Navigator.pushNamed(context, "/home");
-        } else {
-          showToast(message: "Usuario inactivo. Contacta al administrador.");
-          await _firebaseAuth.signOut(); // Cerrar sesión del usuario inactivo
-        }
-      } else if (result.status == LoginStatus.cancelled) {
-        showToast(message: "Inicio de sesión con Facebook cancelado");
-      } else {
-        showToast(
-            message:
-                "Ha ocurrido un error durante el inicio de sesión con Facebook");
-      }
-    } catch (e) {
-      showToast(message: "Error al iniciar sesión con Facebook: $e");
-    }
-  }
+  //       if (userDoc.exists &&
+  //           userDoc.data() != null &&
+  //           userDoc['state'] == true) {
+  //         Navigator.pushNamed(context, "/home");
+  //       } else {
+  //         showToast(message: "Usuario inactivo. Contacta al administrador.");
+  //         await _firebaseAuth.signOut(); // Cerrar sesión del usuario inactivo
+  //       }
+  //     } else if (result.status == LoginStatus.cancelled) {
+  //       showToast(message: "Inicio de sesión con Facebook cancelado");
+  //     } else {
+  //       showToast(
+  //           message:
+  //               "Ha ocurrido un error durante el inicio de sesión con Facebook");
+  //     }
+  //   } catch (e) {
+  //     showToast(message: "Error al iniciar sesión con Facebook: $e");
+  //   }
+  // }
 }

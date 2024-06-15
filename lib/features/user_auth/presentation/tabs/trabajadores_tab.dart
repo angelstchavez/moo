@@ -577,7 +577,7 @@ class _TrabajadorTabState extends State<TrabajadorTab> {
                         ),
                         hoverColor: Colors.green.shade50,
                         title: Text(
-                            '${trabajador["nombre"]} ${trabajador['apellido']} '),
+                            '${trabajador["nombre"]} ${trabajador['apellido']} ',style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
                         subtitle: Text(trabajador['rol']),
                         trailing: Switch(
                           activeColor: Colors.white,

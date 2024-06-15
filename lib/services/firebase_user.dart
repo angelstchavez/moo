@@ -68,6 +68,29 @@ Future<List<Map<String, dynamic>>> getUserById(id) async {
   await Future.delayed(const Duration(milliseconds: 5));
   return users;
 }
+Future<List<Map<String, dynamic>>> getUserByemail(email) async {
+  List<Map<String, dynamic>> users = [];
+  // Obtener referencia a la colección de lotes
+  CollectionReference collectionReferenceUsuarios = db.collection("usuarios");
+
+  // Realizar la consulta filtrando por el campo 'user'
+  QuerySnapshot queryUsuarios = await collectionReferenceUsuarios.where('email',isEqualTo:email ).get();
+
+  for (DocumentSnapshot documento in queryUsuarios.docs) {
+    final Map<String, dynamic> data = documento.data() as Map<String, dynamic>;
+
+    final usuario = {
+      
+      'email': data['email'],
+
+    };
+    users.add(usuario);
+  }
+
+  // Simular un pequeño retraso antes de devolver los lotes
+  await Future.delayed(const Duration(milliseconds: 5));
+  return users;
+}
 Future<List<Map<String, dynamic>>> getUserByJefe() async {
   List<Map<String, dynamic>> users = [];
   // Obtener referencia a la colección de lotes
@@ -120,7 +143,7 @@ Future<void> addUserT(String user,String nombre, String apellido, String email,S
     'state':true
   });
 }
-Future<void> addUserP(String user,String jefe,String nombre, String apellido, String email,String telefono) async {
+Future<void> addUserP(String user,String jefe,String? nombre, String? apellido, String email,String? telefono) async {
   
   await db.collection('usuarios').add({
     

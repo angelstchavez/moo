@@ -32,6 +32,14 @@ class FormContainerWidget extends StatefulWidget {
 class _FormContainerWidgetState extends State<FormContainerWidget> {
   bool _obscureText = true;
 
+  // Validador que no permite campos vacíos
+  String? _notEmptyValidator(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Este campo no puede estar vacío';
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -48,26 +56,26 @@ class _FormContainerWidgetState extends State<FormContainerWidget> {
         key: widget.fieldKey,
         obscureText: widget.isPasswordField == true ? _obscureText : false,
         onSaved: widget.onSaved,
-        validator: widget.validator,
+        validator: widget.validator ?? _notEmptyValidator,
         onFieldSubmitted: widget.onFieldSubmitted,
         decoration: InputDecoration(
           border: InputBorder.none,
           filled: true,
           hintText: widget.hintText,
           hintStyle: const TextStyle(color: Colors.black45),
-          suffixIcon: GestureDetector(
-            onTap: () {
-              setState(() {
-                _obscureText = !_obscureText;
-              });
-            },
-            child: widget.isPasswordField == true
-                ? Icon(
+          suffixIcon: widget.isPasswordField == true
+              ? GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _obscureText = !_obscureText;
+                    });
+                  },
+                  child: Icon(
                     _obscureText ? Icons.visibility_off : Icons.visibility,
                     color: _obscureText == false ? Colors.green : Colors.grey,
-                  )
-                : const Text(""),
-          ),
+                  ),
+                )
+              : const SizedBox.shrink(),
         ),
       ),
     );

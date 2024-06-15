@@ -147,7 +147,20 @@ class _ContentAnimalState extends State<ContentAnimal> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           IconButton(
-                            onPressed: () async {},
+                            onPressed: () async {
+                              await showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AddProduction(
+                                    animal: widget.id,
+                                    tLitros: totalCantidad,
+                                  );
+                                },
+                              );
+                              setState(() {
+                                loadData();
+                              });
+                            },
                             icon: const Icon(Icons.add),
                             iconSize: 70,
                             color: Colors.grey,
@@ -182,7 +195,6 @@ class _ContentAnimalState extends State<ContentAnimal> {
                           children: [
                             Card(
                               child: Dismissible(
-                                
                                 background: Container(
                                   color: Colors.blue,
                                   alignment: AlignmentDirectional.centerStart,
@@ -215,11 +227,11 @@ class _ContentAnimalState extends State<ContentAnimal> {
                                 },
                                 confirmDismiss: (direction) async {
                                   bool result = false;
-                                  
+
                                   String fechaP = produccion['fecha'];
                                   String idProduccion = produccion['uid'];
-                                  double cantidadProduccion = produccion['cantidad'];
-                                 
+                                  double cantidadProduccion =
+                                      produccion['cantidad'];
 
                                   if (direction ==
                                       DismissDirection.startToEnd) {
@@ -266,12 +278,15 @@ class _ContentAnimalState extends State<ContentAnimal> {
                                             ),
                                             TextButton(
                                               onPressed: () async {
-                                                await deleteProduccion(idProduccion)
+                                                await deleteProduccion(
+                                                        idProduccion)
                                                     .then(
                                                   (value) {
                                                     setState(() {
-                                                      
-                                                      updateAnimalProduccion(widget.id, totalCantidad-cantidadProduccion);
+                                                      updateAnimalProduccion(
+                                                          widget.id,
+                                                          totalCantidad -
+                                                              cantidadProduccion);
                                                       loadData();
                                                     });
                                                   },

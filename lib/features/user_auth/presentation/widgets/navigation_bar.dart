@@ -10,11 +10,16 @@ import 'package:moo/features/user_auth/presentation/pages/farms/farm_page.dart';
 import 'package:moo/features/user_auth/presentation/pages/home_page.dart';
 import 'package:moo/features/user_auth/presentation/pages/porfile_page.dart';
 import 'package:moo/features/user_auth/presentation/pages/production_page.dart';
+import 'package:moo/features/user_auth/presentation/pages/signInGoogle.dart';
 import 'package:moo/features/user_auth/presentation/widgets/drawer_widget.dart';
 import 'package:moo/global/common/toast.dart';
+import 'package:moo/services/firebase_user.dart';
 
+// ignore: must_be_immutable
 class NavBar extends StatefulWidget {
-  const NavBar({Key? key}) : super(key: key);
+  String? email;
+  String? id;
+  NavBar({Key? key, this.email, this.id}) : super(key: key);
 
   @override
   State<NavBar> createState() => _NavBarState();
@@ -22,6 +27,43 @@ class NavBar extends StatefulWidget {
 
 class _NavBarState extends State<NavBar> {
   int currentIndex = 0;
+
+  void newAccountGoogle() async {
+    List<Map<String, dynamic>> user = await getUserByemail(widget.email);
+    String? email = user.isNotEmpty ? user[0]['email'] : null;
+
+    if (email == null) {
+      await showDialog(
+        barrierDismissible: false,
+        barrierColor: Colors.grey,
+
+        context: context,
+        builder: (BuildContext context) {
+          return AddUserAndFarmGoogle(
+            email: widget.email!,
+            id: widget.id!,
+          );
+        },
+      ).whenComplete((){
+        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => NavBar()
+                            ),
+                          );
+      });
+    }
+
+    // Si el usuario no existe, se muestra el diálogo para añadirlo
+  }
+
+  @override
+  void initState() {
+    newAccountGoogle();
+
+    super.initState();
+  }
+
   static const List body = [
     HomePage(),
     BatchPage(),
@@ -31,12 +73,9 @@ class _NavBarState extends State<NavBar> {
   ];
   void _logout() async {
     try {
-      
-      
-        await FirebaseAuth.instance.signOut();
+      await FirebaseAuth.instance.signOut();
 
-
-       Navigator.pushNamed(context, "/login");
+      Navigator.pushNamed(context, "/login");
       showToast(message: "Sesión cerrada exitosamente");
     } catch (e) {
       showToast(message: "Error al cerrar sesión: $e");
@@ -84,25 +123,20 @@ class _NavBarState extends State<NavBar> {
         child: body.elementAt(currentIndex),
       ),
       bottomNavigationBar: NavigationBar(
-        
-        
         indicatorColor: Colors.grey.shade300,
         destinations: [
           NavigationDestination(
-            
-              icon: Icon(
-                Icons.home_outlined,
-                color: Colors.grey.shade600,
-                size: 30,
-              ),
-              selectedIcon: const Icon(
-                Icons.home,
-                size: 30,
-              ),
-              label: 'Inicio',
-              
-              
-              ),
+            icon: Icon(
+              Icons.home_outlined,
+              color: Colors.grey.shade600,
+              size: 30,
+            ),
+            selectedIcon: const Icon(
+              Icons.home,
+              size: 30,
+            ),
+            label: 'Inicio',
+          ),
           NavigationDestination(
               icon: Icon(
                 Icons.agriculture_outlined,
@@ -117,11 +151,11 @@ class _NavBarState extends State<NavBar> {
 
           NavigationDestination(
               icon: Icon(
-                Icons.assignment_outlined, 
+                Icons.assignment_outlined,
                 color: Colors.grey.shade600,
                 size: 30,
-                ),
-                selectedIcon: const Icon(
+              ),
+              selectedIcon: const Icon(
                 Icons.assignment,
                 size: 30,
               ),
